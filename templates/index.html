@@ -1,10 +1,183 @@
 {% extends "base.html" %}
 
 {% block content %}
-<section class="em-construcao">
-  <p class="em-construcao__status">● EM CONSTRUÇÃO</p>
-  <h1 class="em-construcao__nome">Paulo Souza</h1>
-  <p class="em-construcao__sub">{{ "Desenvolvedor Backend Python" if lang == "pt" else "Backend Python Developer" }}</p>
-  <p class="em-construcao__aviso">{{ "Portfólio em construção — em breve." if lang == "pt" else "Portfolio under construction — coming soon." }}</p>
+
+{# ── HERO ──────────────────────────────────────────────────────────────── #}
+<section class="hero" aria-labelledby="hero-name">
+  <div class="container">
+    <div class="hero__panel">
+
+      <div class="hero__status-bar animate-line" style="--i:0">
+        <span class="status-badge status-badge--on">{{ hero.status_label }}</span>
+        <span class="hero__sep" aria-hidden="true">·</span>
+        <span class="hero__location">{{ contact.location_short }}</span>
+        <span class="hero__sep" aria-hidden="true">·</span>
+        <span class="hero__location">{{ contact.availability }}</span>
+      </div>
+
+      <div class="hero__name-block animate-line" style="--i:1">
+        <h1 class="hero__name" id="hero-name">{{ hero.name }}</h1>
+        <p class="hero__role">{{ hero.role }}</p>
+      </div>
+
+      <p class="hero__tagline animate-line" style="--i:2">{{ hero.tagline }}</p>
+
+      <ul class="hero__proof animate-line" style="--i:3" aria-label="{% if lang == 'pt' %}Prova de entrega{% else %}Proof of delivery{% endif %}">
+        {% for item in hero.proof_chips %}
+        <li class="hero__proof-item">{{ item }}</li>
+        {% endfor %}
+      </ul>
+
+      <div class="hero__ctas animate-line" style="--i:4">
+        <a href="/assets/cv/{{ contact.cv_filename }}"
+           class="btn btn--primary"
+           download
+           aria-label="{{ contact.cv_label }}">{{ hero.cta_cv }}</a>
+        <a href="{{ contact.github_url }}"
+           class="btn btn--ghost"
+           target="_blank"
+           rel="noopener noreferrer">{{ hero.cta_github }}</a>
+        <a href="{{ contact.linkedin_url }}"
+           class="btn btn--ghost"
+           target="_blank"
+           rel="noopener noreferrer">{{ hero.cta_linkedin }}</a>
+        <a href="mailto:{{ contact.email }}"
+           class="btn btn--ghost">{{ hero.cta_email }}</a>
+      </div>
+
+    </div>
+  </div>
 </section>
+
+{# ── STACK ─────────────────────────────────────────────────────────────── #}
+<section class="section" id="stack" aria-labelledby="stack-heading">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-header__label" id="stack-heading">{{ stack.heading }}</span>
+    </div>
+    <div class="stack-groups">
+      {% for group in stack.groups %}
+      <div class="stack-group">
+        <p class="stack-group__label">{{ group.label }}</p>
+        <div class="chip-list">
+          {% for item in group['items'] %}
+          <span class="chip">{{ item }}</span>
+          {% endfor %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# ── CASOS ─────────────────────────────────────────────────────────────── #}
+<section class="section" id="casos" aria-labelledby="casos-heading">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-header__label" id="casos-heading">
+        {% if lang == "pt" %}CASOS{% else %}CASES{% endif %}
+      </span>
+    </div>
+    <div class="cases-grid">
+      {% for case in cases %}
+      <article class="case-card" aria-labelledby="case-{{ case.slug }}">
+        <div class="case-card__top">
+          <span class="status-badge {{ 'status-badge--on' if case.status_type == 'on' else 'status-badge--off' }}">
+            {{ case.status }}
+          </span>
+        </div>
+        <h2 class="case-card__name" id="case-{{ case.slug }}">{{ case.name }}</h2>
+        <p class="case-card__tagline">{{ case.tagline }}</p>
+        <div class="case-card__metric-block">
+          <span class="case-card__metric">{{ case.metric }}</span>
+          <span class="case-card__metric-label">{{ case.metric_label }}</span>
+        </div>
+        <p class="case-card__problem">{{ case.problem_solved }}</p>
+        <div class="chip-list">
+          {% for chip in case.stack_chips %}
+          <span class="chip">{{ chip }}</span>
+          {% endfor %}
+        </div>
+        <a href="{{ '/en/cases/' if lang == 'en' else '/casos/' }}{{ case.slug }}.html"
+           class="case-card__link">
+          {% if lang == "pt" %}Ver o caso completo →{% else %}Read the full case →{% endif %}
+        </a>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# ── SOBRE ─────────────────────────────────────────────────────────────── #}
+<section class="section" id="{{ 'sobre' if lang == 'pt' else 'about' }}" aria-labelledby="about-heading">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-header__label" id="about-heading">{{ about.heading | upper }}</span>
+    </div>
+    <div class="about__content">
+      {% for p in about.paragraphs %}
+      <p class="about__paragraph">{{ p }}</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# ── CONTATO ───────────────────────────────────────────────────────────── #}
+<section class="section" id="{{ 'contato' if lang == 'pt' else 'contact' }}" aria-labelledby="contact-heading">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-header__label" id="contact-heading">{{ contact.heading | upper }}</span>
+    </div>
+    <div class="contact-grid">
+
+      <div class="contact-item">
+        <span class="contact-item__label">E-mail</span>
+        <div class="contact-item__row">
+          <a href="mailto:{{ contact.email }}" class="contact-item__link">{{ contact.email }}</a>
+          <button class="contact-copy-btn"
+                  data-copy="{{ contact.email }}"
+                  data-copied-label="{{ 'Copiado!' if lang == 'pt' else 'Copied!' }}"
+                  aria-label="{{ 'Copiar e-mail' if lang == 'pt' else 'Copy e-mail' }}">
+            {% if lang == "pt" %}Copiar{% else %}Copy{% endif %}
+          </button>
+        </div>
+      </div>
+
+      <div class="contact-item">
+        <span class="contact-item__label">{% if lang == "pt" %}Telefone{% else %}Phone{% endif %}</span>
+        <a href="{{ contact.phone_url }}" class="contact-item__link">{{ contact.phone }}</a>
+      </div>
+
+      <div class="contact-item">
+        <span class="contact-item__label">LinkedIn</span>
+        <a href="{{ contact.linkedin_url }}"
+           class="contact-item__link"
+           target="_blank"
+           rel="noopener noreferrer">{{ contact.linkedin_handle }}</a>
+      </div>
+
+      <div class="contact-item">
+        <span class="contact-item__label">GitHub</span>
+        <a href="{{ contact.github_url }}"
+           class="contact-item__link"
+           target="_blank"
+           rel="noopener noreferrer">{{ contact.github_handle }}</a>
+      </div>
+
+      <div class="contact-item">
+        <span class="contact-item__label">CV</span>
+        <a href="/assets/cv/{{ contact.cv_filename }}"
+           class="contact-item__link"
+           download>{{ contact.cv_label }}</a>
+      </div>
+
+      <div class="contact-item">
+        <span class="contact-item__label">{% if lang == "pt" %}Localização{% else %}Location{% endif %}</span>
+        <span class="contact-item__text">{{ contact.location }}</span>
+      </div>
+
+    </div>
+  </div>
+</section>
+
 {% endblock %}

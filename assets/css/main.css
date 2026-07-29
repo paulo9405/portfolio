@@ -546,7 +546,301 @@ p + p { margin-top: var(--sp-4); }
   }
 }
 
-/* === 15. EM CONSTRUÇÃO (Fase 0 / placeholder) =========================== */
+/* === 15. BUTTONS ======================================================== */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  letter-spacing: 0.03em;
+  padding: var(--sp-2) var(--sp-5);
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color var(--duration-fast) var(--easing),
+              border-color var(--duration-fast) var(--easing),
+              color var(--duration-fast) var(--easing);
+}
+
+.btn--primary {
+  background-color: var(--primary);
+  border-color: var(--primary);
+  color: var(--text);
+}
+
+.btn--primary:hover {
+  background-color: var(--primary-dim);
+  border-color: var(--primary-dim);
+}
+
+.btn--ghost {
+  background-color: transparent;
+  border-color: var(--border);
+  color: var(--text-muted);
+}
+
+.btn--ghost:hover {
+  border-color: var(--text-muted);
+  color: var(--text);
+}
+
+/* === 16. HERO =========================================================== */
+
+.hero {
+  padding-block: var(--sp-16) var(--sp-20);
+  min-height: calc(100dvh - 3rem);
+  display: flex;
+  align-items: center;
+}
+
+.hero__panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-8);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--sp-8) var(--sp-6);
+  background-color: var(--bg-surface);
+}
+
+@media (min-width: 640px) {
+  .hero__panel {
+    padding: var(--sp-10) var(--sp-10);
+  }
+}
+
+.hero__status-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--sp-2) var(--sp-3);
+}
+
+.hero__sep {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--text-subtle);
+}
+
+.hero__location {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--text-subtle);
+  letter-spacing: 0.04em;
+}
+
+.hero__name-block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.hero__name {
+  font-family: var(--font-display);
+  font-size: var(--text-hero);
+  font-weight: var(--weight-semi);
+  color: var(--text);
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+}
+
+.hero__role {
+  font-family: var(--font-mono);
+  font-size: var(--text-base);
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+}
+
+.hero__tagline {
+  font-size: var(--text-lg);
+  color: var(--text);
+  line-height: 1.6;
+  max-width: 52ch;
+}
+
+.hero__proof {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.hero__proof-item {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+.hero__proof-item::before {
+  content: "▸";
+  color: var(--primary-text);
+  font-size: var(--text-xs);
+  flex-shrink: 0;
+}
+
+.hero__ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+}
+
+/* Hero animation — staggered line-in */
+.animate-line {
+  animation: line-in 0.5s ease both;
+  animation-delay: calc(var(--i, 0) * 0.13s + 0.05s);
+}
+
+@keyframes line-in {
+  from {
+    opacity: 0;
+    transform: translateY(var(--sp-3));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* === 17. STACK SECTION ================================================== */
+
+.stack-groups {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--sp-8);
+}
+
+@media (min-width: 480px) {
+  .stack-groups {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.stack-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+
+.stack-group__label {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--text-subtle);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* === 18. CASES SECTION ================================================== */
+
+.case-card__metric-block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+}
+
+.case-card__metric-label {
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  color: var(--text-subtle);
+}
+
+/* === 19. ABOUT SECTION ================================================== */
+
+.about__content {
+  max-width: 65ch;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+}
+
+.about__paragraph {
+  font-size: var(--text-md);
+  color: var(--text);
+  line-height: 1.7;
+}
+
+/* === 20. CONTACT SECTION ================================================ */
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--sp-6);
+}
+
+@media (min-width: 480px) {
+  .contact-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 768px) {
+  .contact-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.contact-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+}
+
+.contact-item__label {
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  color: var(--text-subtle);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.contact-item__row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.contact-item__link {
+  font-size: var(--text-base);
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color var(--duration-fast) var(--easing);
+}
+
+.contact-item__link:hover {
+  color: var(--primary-text);
+}
+
+.contact-item__text {
+  font-size: var(--text-base);
+  color: var(--text-muted);
+}
+
+.contact-copy-btn {
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  letter-spacing: 0.06em;
+  color: var(--text-subtle);
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: var(--sp-1) var(--sp-2);
+  cursor: pointer;
+  transition: color var(--duration-fast) var(--easing),
+              border-color var(--duration-fast) var(--easing);
+}
+
+.contact-copy-btn:hover {
+  color: var(--text);
+  border-color: var(--text-muted);
+}
+
+/* === 21. EM CONSTRUÇÃO (Fase 0 / placeholder) =========================== */
 
 .em-construcao {
   display: flex;

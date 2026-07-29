@@ -37,25 +37,35 @@ def copy_assets():
     shutil.copytree(ASSETS_SRC, dest)
 
 
-def build_lang(env: Environment, content: dict, lang: str):
-    data = content[lang]
+def base_ctx(lang: str, data: dict, canonical: str, hreflang_pt: str, hreflang_en: str) -> dict:
     is_en = lang == "en"
-    out_dir = DIST / "en" if is_en else DIST
-    out_dir.mkdir(parents=True, exist_ok=True)
-
-    canonical = f"{BASE_URL}/en/" if is_en else f"{BASE_URL}/"
-
-    ctx = {
+    return {
         "lang": lang,
         "lang_code": "en" if is_en else "pt-BR",
         "meta": data["meta"],
         "canonical_url": canonical,
-        "hreflang_pt": f"{BASE_URL}/",
-        "hreflang_en": f"{BASE_URL}/en/",
+        "hreflang_pt": hreflang_pt,
+        "hreflang_en": hreflang_en,
         "root_url": "/en/" if is_en else "/",
         "pt_url": "/",
         "en_url": "/en/",
+        # content sections
+        "hero": data["hero"],
+        "stack": data["stack"],
+        "cases": data["cases"],
+        "about": data["about"],
+        "contact": data["contact"],
     }
+
+
+def build_lang(env: Environment, content: dict, lang: str):
+    is_en = lang == "en"
+    data = content[lang]
+    out_dir = DIST / "en" if is_en else DIST
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    canonical = f"{BASE_URL}/en/" if is_en else f"{BASE_URL}/"
+    ctx = base_ctx(lang, data, canonical, f"{BASE_URL}/", f"{BASE_URL}/en/")
 
     tmpl = env.get_template("index.html")
     (out_dir / "index.html").write_text(tmpl.render(**ctx), encoding="utf-8")
