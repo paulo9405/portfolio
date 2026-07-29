@@ -1,0 +1,442 @@
+{
+  "pt": {
+    "slug": "gestao-acai",
+    "name": "Gestão de Açaí",
+    "status": "EM PRODUÇÃO",
+    "status_type": "on",
+    "period": "2026 – Atual · uso diário por funcionários",
+    "role": "Desenvolvido integralmente por Paulo, para um estabelecimento real da família.",
+    "meta": {
+      "title": "Gestão de Açaí — Paulo Souza",
+      "description": "Sistema de gestão operacional e financeira: fechamento de caixa de ~1h para ~10min, CI/CD com gate 80%, backup diário automatizado para Google Drive."
+    },
+    "links": [],
+    "metrics": [
+      {
+        "value": "~1h → ~10min",
+        "label": "fechamento de caixa diário",
+        "ref": ""
+      },
+      {
+        "value": "~296",
+        "label": "testes rodando contra PostgreSQL real a cada push",
+        "ref": ""
+      },
+      {
+        "value": "80%",
+        "label": "gate de cobertura — build falha abaixo disso",
+        "ref": ""
+      },
+      {
+        "value": "+115 pedidos · +R$ 4,6 mil",
+        "label": "registrados na primeira semana do módulo de pedidos",
+        "ref": ""
+      }
+    ],
+    "stack": [
+      "Django", "PostgreSQL (Neon)", "Render",
+      "GitHub Actions", "Ruff", "pytest", "rclone", "Google Drive API"
+    ],
+    "problem": {
+      "heading": "O problema",
+      "paragraphs": [
+        "Sistema financeiro em uso diário por funcionários de um estabelecimento real da família — uma usuária de baixa familiaridade técnica. Uma regressão em produção não é um bug abstrato: atrapalha o dia da loja, o fechamento de caixa e o controle de estoque.",
+        "O sistema já tinha ~296 testes e backup diário configurado. Mas nada impedia que código quebrado fosse ao ar: o Render fazia deploy direto a cada git push, sem rodar teste nenhum. A proteção existia só no papel.",
+        "O fechamento de caixa levava cerca de uma hora porque era feito manualmente, conciliando registros de formas de pagamento diferentes sem visibilidade consolidada. Com o módulo de caixa, o mesmo processo passou a levar ~10 minutos."
+      ]
+    },
+    "architecture": {
+      "heading": "Arquitetura",
+      "description": "Django com CBVs e arquitetura em camadas (View → Service → Selector → Model); PostgreSQL no Neon (serverless, sem servidor para gerenciar); hospedagem no Render; GitHub Actions orquestrando lint, testes e deploy; backup diário via workflow agendado no GitHub Actions — pg_dump do endpoint direto do Neon → gzip → rclone → Google Drive → rotação dos 15 mais recentes. Nenhum artefato persiste no runner.",
+      "diagram_note": "Diagrama do pipeline CI/CD — Fase 5"
+    },
+    "decisions": [
+      {
+        "label": "DECISÃO",
+        "title": "Pipeline de CI/CD com trava de deploy",
+        "items": [
+          {
+            "key": "Problema",
+            "value": "Código quebrado podia ir direto ao ar. Push na main disparava deploy imediato no Render, sem rodar lint nem testes. Com uma usuária de baixa familiaridade técnica dependendo do sistema, qualquer regressão visible virava um incidente."
+          },
+          {
+            "key": "Alternativas",
+            "value": "Confiança manual: rodar os testes localmente antes de fazer push. Funciona até o dia em que não funciona. Deploy automático com toggle: desligar o auto-deploy e fazer deploy manual — troca uma automação por outra, mais frágil."
+          },
+          {
+            "key": "Escolha",
+            "value": "Pipeline no GitHub Actions: push/PR → Ruff (lint) → pytest contra Postgres real → gate de cobertura 80% → só com CI verde o job de deploy chama o Deploy Hook do Render. Branch protection na main torna os checks obrigatórios e fecha o push direto. autoDeploy: false no render.yaml desliga o deploy automático por push. Regra central: deploy só acontece depois de CI verde."
+          },
+          {
+            "key": "Resultado",
+            "value": "Nenhum deploy acontece com CI vermelho. A main está sempre em estado deployável. O pipeline virou registro no repositório — qualquer pessoa que olhar o código entende exatamente o que precisa passar para ir a produção."
+          }
+        ]
+      },
+      {
+        "label": "DECISÃO",
+        "title": "PostgreSQL real na CI, não SQLite",
+        "items": [
+          {
+            "key": "Problema",
+            "value": "Testes que passam em SQLite podem falhar em PostgreSQL por diferenças de tipo, comportamento de constraints, migrations específicas de Postgres ou SQL que o SQLite não suporta. Um bug desse tipo só apareceria em produção."
+          },
+          {
+            "key": "Escolha",
+            "value": "Service container de PostgreSQL efêmero no runner do GitHub Actions. Sobe ao lado do job de testes, recebe um health check antes dos testes rodarem, e é destruído ao final. Espelha exatamente o banco de produção (Neon/Postgres)."
+          },
+          {
+            "key": "Resultado",
+            "value": "~296 testes rodando contra PostgreSQL real a cada push. Nenhum bug de banco só-em-produção após a mudança. O CI valida o mesmo ambiente que o usuário usa."
+          }
+        ]
+      },
+      {
+        "label": "DECISÃO",
+        "title": "Backup diário via GitHub Actions, não cron no servidor",
+        "items": [
+          {
+            "key": "Problema",
+            "value": "O roadmap original previa cron + rclone num servidor sempre ligado. No Render free isso não existe: a instância hiberna quando não recebe tráfego, o filesystem é efêmero e não há suporte a cron. Uma queda de dados financeiros sem backup é inaceitável."
+          },
+          {
+            "key": "Alternativas",
+            "value": "Migrar para plano pago no Render (custo recorrente sem benefício técnico). Backup manual periódico (confiança humana, não confiança de sistema). VPS separado só para o cron (infraestrutura para resolver falta de infraestrutura)."
+          },
+          {
+            "key": "Escolha",
+            "value": "Workflow agendado no GitHub Actions (cron: '0 3 * * *'): pg_dump com endpoint direto do Neon (sem pooler/PgBouncer) → gzip → validação de tamanho mínimo → rclone para o Google Drive → validação do upload → rotação mantendo os 15 mais recentes. Nada persiste no runner efêmero. Validado em produção em 17/07/2026."
+          },
+          {
+            "key": "Resultado",
+            "value": "Backup diário automatizado, sem servidor extra para manter. Rotação automática de 15 arquivos. O próprio GitHub Actions registra cada execução — auditável, sem dependência de infraestrutura adicional."
+          }
+        ]
+      },
+      {
+        "label": "DECISÃO",
+        "title": "Arquitetura em camadas documentada antes do código",
+        "items": [
+          {
+            "key": "Problema",
+            "value": "Sem fronteiras claras entre camadas, regras de negócio migram para as views, os testes ficam acoplados à camada HTTP e qualquer mudança de lógica exige alterar em vários lugares."
+          },
+          {
+            "key": "Escolha",
+            "value": "View → Service (escrita) / Selector (leitura) → Model. Views não contêm regra de negócio. Services encapsulam a lógica de escrita com transações. Selectors isolam queries complexas. Regras de nomeação, paginação, índices e validações escritas em PROJECT_RULES.md antes do primeiro modelo."
+          },
+          {
+            "key": "Resultado",
+            "value": "Testes de serviço sem dependência de request/response HTTP. Refatoração de query sem tocar em view. Novos módulos seguem o mesmo padrão sem instrução adicional."
+          }
+        ]
+      }
+    ],
+    "production": {
+      "heading": "O que quebrou e como resolvi",
+      "incidents": [
+        {
+          "marker": "INCIDENTE",
+          "title": "pg_dump 16 incompatível com Neon PostgreSQL 18",
+          "items": [
+            {
+              "key": "Sintoma",
+              "value": "O workflow de backup falhava com erro de incompatibilidade de versão: o runner Ubuntu vinha com pg_dump 16, mas o Neon rodava PostgreSQL 18. Dumping de versão inferior para banco superior não é suportado."
+            },
+            {
+              "key": "Causa",
+              "value": "O GitHub Actions usa a versão do pg_dump instalada no runner por padrão, que não acompanha automaticamente a versão do banco de destino."
+            },
+            {
+              "key": "Correção",
+              "value": "Instalação do pg_dump 18 via repositório PGDG e adição do binário ao início do PATH com echo 'caminho' >> $GITHUB_PATH. A versão correta é encontrada primeiro, sem conflito com a versão pré-instalada."
+            }
+          ]
+        },
+        {
+          "marker": "INCIDENTE",
+          "title": "Pooler do Neon incompatível com pg_dump",
+          "items": [
+            {
+              "key": "Sintoma",
+              "value": "pg_dump falhava com erro de protocolo ao usar o endpoint padrão do Neon (com PgBouncer). A conexão era estabelecida, mas o dump não completava."
+            },
+            {
+              "key": "Causa",
+              "value": "PgBouncer (pooler de conexões) não suporta o protocolo de comunicação que pg_dump usa para executar dumps. O pg_dump requer conexão direta ao banco."
+            },
+            {
+              "key": "Correção",
+              "value": "Usar o endpoint direto do Neon (sem pooler) na variável de ambiente do workflow. O Neon disponibiliza os dois endpoints — o com pooler para a aplicação e o direto para operações de administração."
+            }
+          ]
+        },
+        {
+          "marker": "INCIDENTE",
+          "title": "Secret multiline rejeitado pelo GitHub",
+          "items": [
+            {
+              "key": "Sintoma",
+              "value": "A string de configuração do rclone para o Google Drive tem múltiplas linhas. Ao tentar cadastrar via interface do GitHub, o secret era corrompido ou rejeitado."
+            },
+            {
+              "key": "Correção",
+              "value": "Cadastrar via CLI: echo 'conteúdo multiline' | gh secret set RCLONE_CONFIG. O pipe preserva as quebras de linha que a interface do GitHub não aceita diretamente."
+            }
+          ]
+        },
+        {
+          "marker": "INCIDENTE",
+          "title": "Rotação apagando backup antes de confirmar upload",
+          "items": [
+            {
+              "key": "Sintoma",
+              "value": "Na primeira versão do workflow, a rotação dos backups antigos rodava antes da validação de que o novo arquivo tinha sido enviado com sucesso ao Drive. Uma falha de upload silenciosa apagaria o histórico sem novo backup válido."
+            },
+            {
+              "key": "Correção",
+              "value": "Reordenar as etapas: upload → validação do arquivo no Drive (tamanho e existência) → só então rotação dos mais antigos. Falha em qualquer etapa de validação interrompe o workflow antes de apagar qualquer coisa."
+            }
+          ]
+        }
+      ]
+    },
+    "result": {
+      "heading": "Resultado",
+      "paragraphs": [
+        "Fechamento de caixa diário reduzido de ~1 hora para ~10 minutos. Na primeira semana do módulo de pedidos: +115 pedidos e +R$ 4,6 mil registrados pelo sistema.",
+        "~296 testes automatizados rodando contra PostgreSQL real a cada push, com gate de cobertura de 80%. Backup diário automatizado, validado em produção desde 17/07/2026, com rotação de 15 arquivos no Google Drive. Nenhum deploy com CI vermelho desde a implementação do pipeline."
+      ]
+    },
+    "learning": {
+      "heading": "Aprendizado",
+      "text": "Ter testes sem trava de deploy é ter uma rede de segurança com buracos. O CI/CD não é complexidade extra — é o que transforma testes em garantia real. E backup sem validação do upload não é backup: é um ritual que dá sensação de segurança sem a segurança de fato."
+    },
+    "navigation": {
+      "back_label": "← Barber Cashflow",
+      "back_url": "/casos/barber-cashflow.html",
+      "next_label": "Nícia Track →",
+      "next_url": "/casos/nicia-track.html"
+    }
+  },
+  "en": {
+    "slug": "acai-management",
+    "name": "Açaí Management",
+    "status": "IN PRODUCTION",
+    "status_type": "on",
+    "period": "2026 – Present · used daily by staff",
+    "role": "Built entirely by Paulo, for a real family business.",
+    "meta": {
+      "title": "Açaí Management — Paulo Souza",
+      "description": "Operational and financial management system: daily cash closing from ~1h to ~10min, CI/CD with 80% coverage gate, automated daily backup to Google Drive."
+    },
+    "links": [],
+    "metrics": [
+      {
+        "value": "~1h → ~10min",
+        "label": "daily cash closing",
+        "ref": ""
+      },
+      {
+        "value": "~296",
+        "label": "tests running against real PostgreSQL on every push",
+        "ref": ""
+      },
+      {
+        "value": "80%",
+        "label": "coverage gate — build fails below this",
+        "ref": ""
+      },
+      {
+        "value": "+115 orders · R$4.6K",
+        "label": "recorded in the first week of the orders module",
+        "ref": ""
+      }
+    ],
+    "stack": [
+      "Django", "PostgreSQL (Neon)", "Render",
+      "GitHub Actions", "Ruff", "pytest", "rclone", "Google Drive API"
+    ],
+    "problem": {
+      "heading": "The problem",
+      "paragraphs": [
+        "Financial management system used daily by staff at a real family business — a non-technical user. A regression in production is not an abstract bug: it disrupts the working day, the cash closing and inventory control.",
+        "The system already had ~296 tests and a daily backup configured. But nothing prevented broken code from going live: Render deployed directly on every git push, without running a single test. The protection existed only on paper.",
+        "The daily cash closing took about an hour because it was done manually, reconciling records from different payment methods without a consolidated view. With the till module, the same process now takes ~10 minutes."
+      ]
+    },
+    "architecture": {
+      "heading": "Architecture",
+      "description": "Django with CBVs and a layered architecture (View → Service → Selector → Model); PostgreSQL on Neon (serverless, no server to manage); hosted on Render; GitHub Actions orchestrating lint, tests and deployment; daily backup via scheduled GitHub Actions workflow — pg_dump from Neon's direct endpoint → gzip → rclone → Google Drive → rotation of the 15 most recent files. No artefacts persist on the ephemeral runner.",
+      "diagram_note": "CI/CD pipeline diagram — Phase 5"
+    },
+    "decisions": [
+      {
+        "label": "DECISION",
+        "title": "CI/CD pipeline with deployment gate",
+        "items": [
+          {
+            "key": "Problem",
+            "value": "Broken code could go live. A push to main triggered an immediate deploy on Render, without running lint or tests. With a non-technical user depending on the system, any visible regression became an incident."
+          },
+          {
+            "key": "Alternatives",
+            "value": "Manual discipline: run tests locally before every push. Works until the day it doesn't. Deploy with toggle: disable auto-deploy and deploy manually — swaps one automation for a more fragile one."
+          },
+          {
+            "key": "Choice",
+            "value": "GitHub Actions pipeline: push/PR → Ruff (lint) → pytest against real Postgres → 80% coverage gate → only with green CI does the deploy job call Render's Deploy Hook. Branch protection on main makes checks mandatory and blocks direct pushes. autoDeploy: false in render.yaml disables push-triggered deploys. Central rule: deployment only happens after green CI."
+          },
+          {
+            "key": "Result",
+            "value": "No deployment happens with a red CI. Main is always in a deployable state. The pipeline is version-controlled in the repository — anyone reading the code understands exactly what must pass before going to production."
+          }
+        ]
+      },
+      {
+        "label": "DECISION",
+        "title": "Real PostgreSQL in CI, not SQLite",
+        "items": [
+          {
+            "key": "Problem",
+            "value": "Tests that pass on SQLite can fail on PostgreSQL due to type differences, constraint behaviour, Postgres-specific migrations or SQL SQLite does not support. That kind of bug would only surface in production."
+          },
+          {
+            "key": "Choice",
+            "value": "Ephemeral PostgreSQL service container on the GitHub Actions runner. It starts alongside the test job, passes a health check before tests run, and is destroyed at the end. Mirrors the exact production database (Neon/Postgres)."
+          },
+          {
+            "key": "Result",
+            "value": "~296 tests running against real PostgreSQL on every push. No production-only database bugs since the change. The CI validates the same environment the user runs on."
+          }
+        ]
+      },
+      {
+        "label": "DECISION",
+        "title": "Daily backup via GitHub Actions, not server cron",
+        "items": [
+          {
+            "key": "Problem",
+            "value": "The original roadmap called for cron + rclone on an always-on server. On Render free that does not exist: the instance hibernates on idle, the filesystem is ephemeral and there is no cron support. Losing financial data without a backup is unacceptable."
+          },
+          {
+            "key": "Alternatives",
+            "value": "Upgrade to a paid Render plan (recurring cost with no technical benefit). Periodic manual backups (human reliability, not system reliability). Separate VPS just for cron (infrastructure to solve a lack of infrastructure)."
+          },
+          {
+            "key": "Choice",
+            "value": "Scheduled GitHub Actions workflow (cron: '0 3 * * *'): pg_dump with Neon's direct endpoint (no PgBouncer pooler) → gzip → minimum size validation → rclone to Google Drive → upload validation → rotation keeping the 15 most recent files. Nothing persists on the ephemeral runner. Validated in production on 17/07/2026."
+          },
+          {
+            "key": "Result",
+            "value": "Automated daily backup with no extra server to maintain. Automatic rotation of 15 files. Every GitHub Actions run is logged and auditable — no dependency on additional infrastructure."
+          }
+        ]
+      },
+      {
+        "label": "DECISION",
+        "title": "Layered architecture documented before writing code",
+        "items": [
+          {
+            "key": "Problem",
+            "value": "Without clear layer boundaries, business logic migrates into views, tests become coupled to the HTTP layer, and any logic change requires edits in multiple places."
+          },
+          {
+            "key": "Choice",
+            "value": "View → Service (write) / Selector (read) → Model. Views contain no business logic. Services encapsulate write logic with transactions. Selectors isolate complex queries. Naming rules, pagination, indexes and validation conventions written in PROJECT_RULES.md before the first model."
+          },
+          {
+            "key": "Result",
+            "value": "Service tests with no dependency on HTTP request/response. Query refactoring without touching views. New modules follow the same pattern without additional instruction."
+          }
+        ]
+      }
+    ],
+    "production": {
+      "heading": "What broke and how I fixed it",
+      "incidents": [
+        {
+          "marker": "INCIDENT",
+          "title": "pg_dump 16 incompatible with Neon PostgreSQL 18",
+          "items": [
+            {
+              "key": "Symptom",
+              "value": "The backup workflow failed with a version incompatibility error: the Ubuntu runner came with pg_dump 16, but Neon ran PostgreSQL 18. Dumping from a lower version client to a higher version server is not supported."
+            },
+            {
+              "key": "Cause",
+              "value": "GitHub Actions uses the pg_dump version pre-installed on the runner, which does not automatically match the target database version."
+            },
+            {
+              "key": "Fix",
+              "value": "Install pg_dump 18 via the PGDG repository and add the binary to the front of PATH with echo 'path' >> $GITHUB_PATH. The correct version is found first, without conflicting with the pre-installed one."
+            }
+          ]
+        },
+        {
+          "marker": "INCIDENT",
+          "title": "Neon pooler incompatible with pg_dump",
+          "items": [
+            {
+              "key": "Symptom",
+              "value": "pg_dump failed with a protocol error when using Neon's default endpoint (with PgBouncer). The connection was established, but the dump never completed."
+            },
+            {
+              "key": "Cause",
+              "value": "PgBouncer (connection pooler) does not support the communication protocol pg_dump uses to perform dumps. pg_dump requires a direct connection to the database."
+            },
+            {
+              "key": "Fix",
+              "value": "Use Neon's direct endpoint (without pooler) in the workflow environment variable. Neon provides both endpoints — the pooled one for the application and the direct one for administrative operations."
+            }
+          ]
+        },
+        {
+          "marker": "INCIDENT",
+          "title": "Multi-line secret rejected by GitHub",
+          "items": [
+            {
+              "key": "Symptom",
+              "value": "The rclone configuration string for Google Drive spans multiple lines. When trying to add it via the GitHub interface, the secret was corrupted or rejected."
+            },
+            {
+              "key": "Fix",
+              "value": "Register via CLI: echo 'multi-line content' | gh secret set RCLONE_CONFIG. The pipe preserves line breaks that the GitHub interface does not accept directly."
+            }
+          ]
+        },
+        {
+          "marker": "INCIDENT",
+          "title": "Rotation deleting backup before confirming upload",
+          "items": [
+            {
+              "key": "Symptom",
+              "value": "In the first version of the workflow, rotation of old backups ran before validating that the new file had been successfully uploaded to Drive. A silent upload failure would delete the history without a valid new backup."
+            },
+            {
+              "key": "Fix",
+              "value": "Reorder the steps: upload → validate the file on Drive (size and existence) → only then rotate the oldest files. A failure at any validation step stops the workflow before deleting anything."
+            }
+          ]
+        }
+      ]
+    },
+    "result": {
+      "heading": "Result",
+      "paragraphs": [
+        "Daily cash closing reduced from ~1 hour to ~10 minutes. In the first week of the orders module: +115 orders and R$4.6K recorded by the system.",
+        "~296 automated tests running against real PostgreSQL on every push, with an 80% coverage gate. Automated daily backup validated in production since 17/07/2026, with rotation of 15 files on Google Drive. No deployment with a red CI since the pipeline was implemented."
+      ]
+    },
+    "learning": {
+      "heading": "Learning",
+      "text": "Having tests without a deployment gate means having a safety net with holes. CI/CD is not added complexity — it is what turns tests into a real guarantee. And a backup without upload validation is not a backup: it is a ritual that gives a sense of security without the security itself."
+    },
+    "navigation": {
+      "back_label": "← Barber Cashflow",
+      "back_url": "/en/cases/barber-cashflow.html",
+      "next_label": "Nícia Track →",
+      "next_url": "/en/cases/nicia-track.html"
+    }
+  }
+}

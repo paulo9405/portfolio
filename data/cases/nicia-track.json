@@ -1,0 +1,432 @@
+{
+  "pt": {
+    "slug": "nicia-track",
+    "name": "Nícia Track",
+    "status": "EM PRODUÇÃO",
+    "status_type": "on",
+    "period": "2025 – Atual · plataforma de estudos em uso",
+    "role": "Desenvolvido integralmente por Paulo. Migração completa de Render para AWS realizada em produção.",
+    "meta": {
+      "title": "Nícia Track — Paulo Souza",
+      "description": "Plataforma de questões para estudos: 800 questões, 13 disciplinas, ~3.171 linhas de testes. Migração Render → AWS EC2 + RDS + S3."
+    },
+    "links": [],
+    "metrics": [
+      {
+        "value": "800",
+        "label": "questões em 13 disciplinas",
+        "ref": ""
+      },
+      {
+        "value": "~3.171",
+        "label": "linhas de testes automatizados",
+        "ref": ""
+      },
+      {
+        "value": "Render → AWS",
+        "label": "migração realizada em produção: EC2 + RDS + S3",
+        "ref": ""
+      }
+    ],
+    "stack": [
+      "Django", "PostgreSQL", "Docker", "Gunicorn", "Nginx",
+      "AWS EC2", "AWS RDS", "AWS S3", "AWS IAM", "Cloudflare"
+    ],
+    "problem": {
+      "heading": "O problema",
+      "paragraphs": [
+        "Plataforma de questões para estudos com conteúdo real e usuários ativos. O sistema foi iniciado no Render — solução adequada para o MVP. À medida que a plataforma cresceu, surgiram limitações práticas: instância hibernando em idle, sem suporte a armazenamento persistente de arquivos de mídia entre deploys, e necessidade de controle maior sobre a infraestrutura.",
+        "A decisão de migrar para AWS não foi tomada por modismo técnico. Cada componente da migração resolveu um problema concreto: EC2 elimina a hibernação, RDS externaliza o banco com backups gerenciados, S3 persiste os arquivos de mídia entre redeploys, e Cloudflare fica na frente gerenciando DNS e TLS.",
+        "O ângulo técnico deste caso: colocar em produção a pilha completa 'do DNS ao banco' — Cloudflare → Nginx → Gunicorn → Django → RDS — e entender o que quebra em cada camada."
+      ]
+    },
+    "architecture": {
+      "heading": "Arquitetura",
+      "description": "Cloudflare gerencia DNS e termina TLS. EC2 roda um container Docker com Nginx (proxy reverso) na frente de Gunicorn servindo o Django. Banco de dados no RDS PostgreSQL (VPC separada, sem IP público). Arquivos de mídia no S3 via django-storages. IAM com política de mínimo privilégio para o bucket. Security Group do RDS aceita conexão apenas do Security Group da EC2 — sem acesso à internet. Settings separados por ambiente via variável de ambiente DJANGO_SETTINGS_MODULE. A decisão de separar migrations do CMD do Docker foi tomada após o primeiro incidente em produção.",
+      "diagram_note": "Diagrama 'Do DNS ao banco' — Fase 5"
+    },
+    "decisions": [
+      {
+        "label": "DECISÃO",
+        "title": "Arquitetura em camadas desde o primeiro commit",
+        "items": [
+          {
+            "key": "Problema",
+            "value": "Projetos Django que começam sem separação de camadas acumulam lógica de negócio nas views e nos models. Quanto mais o sistema cresce, mais difícil fica refatorar — e mais os testes ficam acoplados à camada HTTP."
+          },
+          {
+            "key": "Escolha",
+            "value": "BaseModel abstrato com UUID como PK e campos created_at/updated_at herdados por todos os models. Settings separados por ambiente (base, development, production, testing) via DJANGO_SETTINGS_MODULE. Settings de testing usam SQLite em memória + MD5Hasher — em vez do bcrypt padrão — tornando a suite de testes cerca de 100x mais rápida sem perder cobertura de lógica."
+          },
+          {
+            "key": "Resultado",
+            "value": "~3.171 linhas de testes sem dependência de infraestrutura externa. Suite roda localmente e na CI com tempo aceitável. Novos models herdam UUID PK e timestamps automaticamente."
+          }
+        ]
+      },
+      {
+        "label": "DECISÃO",
+        "title": "Deploy AWS em fases, não big bang",
+        "items": [
+          {
+            "key": "Problema",
+            "value": "Migrar todos os componentes ao mesmo tempo — EC2, RDS, S3, Cloudflare, Security Groups, Docker — em um único momento cria múltiplos pontos de falha simultâneos. Quando algo quebra, fica difícil isolar a causa."
+          },
+          {
+            "key": "Escolha",
+            "value": "Migração em fases: EC2 funcionando com SQLite antes de provisionar o RDS. RDS acessível antes de configurar Security Groups restritivos. S3 configurado e testado antes de apontar o DNS. Cada fase tem critério de aceitação antes de avançar para a próxima."
+          },
+          {
+            "key": "Resultado",
+            "value": "Cada problema surgiu em uma camada de cada vez, isolado e diagnosticável. Nenhum rollback de múltiplas peças simultâneas necessário."
+          }
+        ]
+      },
+      {
+        "label": "DECISÃO",
+        "title": "Security Group do RDS aceita apenas o SG da EC2",
+        "items": [
+          {
+            "key": "Problema",
+            "value": "Configuração inicial do RDS com Security Group aberto (0.0.0.0/0) para testar conectividade. Banco de produção com IP público e porta 5432 acessível pela internet."
+          },
+          {
+            "key": "Alternativas",
+            "value": "Restringir por IP fixo da EC2 — fragiliza se a EC2 for recriada (o IP muda). Manter aberto e proteger por senha forte — segurança por obscuridade, não por design."
+          },
+          {
+            "key": "Escolha",
+            "value": "Regra de entrada no SG do RDS que aceita conexão na porta 5432 apenas do Security Group da EC2, não de IPs individuais. Adicionado sslmode=require na string de conexão do Django. O banco não tem IP público — existe apenas dentro da VPC."
+          },
+          {
+            "key": "Resultado",
+            "value": "RDS inacessível pela internet por design de rede, não por senha. Independente de qual EC2 substitua a atual, a regra de SG continua válida."
+          }
+        ]
+      },
+      {
+        "label": "DECISÃO",
+        "title": "Arquivos de mídia no S3, não no filesystem da EC2",
+        "items": [
+          {
+            "key": "Problema",
+            "value": "Arquivos de mídia salvos no filesystem da EC2 são perdidos a cada redeploy do container ou recriação da instância. Descoberto na prática: após o primeiro redeploy em produção, as imagens das questões desapareceram."
+          },
+          {
+            "key": "Escolha",
+            "value": "django-storages + boto3 com backend S3. MEDIA_URL aponta para o bucket. IAM com política de mínimo privilégio: o usuário da aplicação tem apenas s3:GetObject, s3:PutObject e s3:DeleteObject no bucket específico — sem acesso a outros recursos AWS."
+          },
+          {
+            "key": "Resultado",
+            "value": "Arquivos de mídia persistem entre redeploys e recriações de instância. Bucket com política IAM restrita — blast radius limitado se as credenciais forem comprometidas."
+          }
+        ]
+      },
+      {
+        "label": "DECISÃO",
+        "title": "Migrations separadas do CMD de startup do container",
+        "items": [
+          {
+            "key": "Problema",
+            "value": "CMD do Dockerfile rodava migrate antes de iniciar o Gunicorn. Com múltiplas réplicas ou restarts, migrations podiam rodar em paralelo — causando race condition nas alterações de schema. Descoberto em produção quando duas instâncias subiram ao mesmo tempo."
+          },
+          {
+            "key": "Alternativas",
+            "value": "Migrations manuais — elimina o risco mas requer intervenção humana a cada deploy. Entrypoint com lock distribuído — adiciona complexidade sem garantia em todos os provedores."
+          },
+          {
+            "key": "Escolha",
+            "value": "Job separado de migrations que roda antes do deploy das réplicas da aplicação. CMD do container inicia apenas o Gunicorn. A separação torna explícito que migrations são uma operação de banco — não de aplicação — e que devem rodar exatamente uma vez por deploy."
+          },
+          {
+            "key": "Resultado",
+            "value": "Nenhum race condition de migration desde a mudança. Restart de container não executa migration. Processo de deploy mais claro: migration → health check → tráfego."
+          }
+        ]
+      }
+    ],
+    "production": {
+      "heading": "O que quebrou e como resolvi",
+      "incidents": [
+        {
+          "marker": "INCIDENTE",
+          "title": "Arquivos de mídia perdidos após redeploy",
+          "items": [
+            {
+              "key": "Sintoma",
+              "value": "Após o primeiro redeploy em produção, todas as imagens vinculadas às questões exibiram erro 404. Os arquivos tinham sido salvos no filesystem da EC2 dentro do container — que foi substituído pelo novo deploy."
+            },
+            {
+              "key": "Causa",
+              "value": "Filesystem de container é efêmero por design. MEDIA_ROOT apontava para um diretório local dentro do container. Arquivos não persistidos externamente são perdidos quando o container é recriado."
+            },
+            {
+              "key": "Correção",
+              "value": "Migração dos arquivos existentes para S3 via AWS CLI. Configuração do django-storages com backend S3. A partir desse ponto, uploads vão direto para o bucket e sobrevivem a qualquer número de redeploys."
+            }
+          ]
+        },
+        {
+          "marker": "INCIDENTE",
+          "title": "Migrations rodando em paralelo na subida de múltiplas réplicas",
+          "items": [
+            {
+              "key": "Sintoma",
+              "value": "Com o CMD do Dockerfile executando migrate no startup, quando duas instâncias subiram simultaneamente durante um deploy, ambas tentaram aplicar as mesmas migrations ao mesmo tempo. Erro de lock no banco."
+            },
+            {
+              "key": "Correção",
+              "value": "Separação das migrations em job dedicado, executado antes das réplicas subirem. CMD do container passou a iniciar apenas o Gunicorn. A ordem de execução ficou explícita e controlada."
+            }
+          ]
+        },
+        {
+          "marker": "INCIDENTE",
+          "title": "Security Group do RDS com acesso público durante a fase de testes",
+          "items": [
+            {
+              "key": "Sintoma",
+              "value": "Para verificar conectividade durante a migração, o Security Group do RDS foi temporariamente aberto para 0.0.0.0/0. O banco ficou acessível pela internet com IP público durante parte do processo de configuração."
+            },
+            {
+              "key": "Correção",
+              "value": "Substituição da regra de 0.0.0.0/0 pela referência direta ao Security Group da EC2. RDS sem IP público. sslmode=require na string de conexão. Feita imediatamente ao confirmar que a conectividade via SG funcionava corretamente."
+            }
+          ]
+        }
+      ]
+    },
+    "result": {
+      "heading": "Resultado",
+      "paragraphs": [
+        "Plataforma com 800 questões em 13 disciplinas, operando em produção na AWS. ~3.171 linhas de testes automatizados com suite rápida graças ao MD5Hasher e SQLite em memória no ambiente de testes.",
+        "Migração Render → AWS concluída sem perda de dados. Infraestrutura com separação clara de responsabilidades: Cloudflare (DNS/TLS) → Nginx (proxy) → Gunicorn (WSGI) → Django → RDS (banco). Arquivos de mídia persistentes no S3. Security Group do RDS sem exposição à internet."
+      ]
+    },
+    "learning": {
+      "heading": "Aprendizado",
+      "text": "Migração incremental — uma camada de cada vez, com critério de aceitação antes de avançar — é a única forma de diagnosticar o que quebra sem colapsar tudo ao mesmo tempo. E segurança por design de rede (SG do RDS só aceitando o SG da EC2) é mais confiável do que segurança por senha: elimina a superfície de ataque antes de precisar de credencial."
+    },
+    "navigation": {
+      "back_label": "← Gestão de Açaí",
+      "back_url": "/casos/gestao-acai.html",
+      "next_label": "Automação e Web Scraping →",
+      "next_url": "/casos/automacao-scraping.html"
+    }
+  },
+  "en": {
+    "slug": "nicia-track",
+    "name": "Nícia Track",
+    "status": "IN PRODUCTION",
+    "status_type": "on",
+    "period": "2025 – Present · study platform in active use",
+    "role": "Built entirely by Paulo. Full migration from Render to AWS completed in production.",
+    "meta": {
+      "title": "Nícia Track — Paulo Souza",
+      "description": "Question-based study platform: 800 questions, 13 subjects, ~3,171 lines of tests. Render → AWS EC2 + RDS + S3 migration."
+    },
+    "links": [],
+    "metrics": [
+      {
+        "value": "800",
+        "label": "questions across 13 subjects",
+        "ref": ""
+      },
+      {
+        "value": "~3,171",
+        "label": "lines of automated tests",
+        "ref": ""
+      },
+      {
+        "value": "Render → AWS",
+        "label": "production migration: EC2 + RDS + S3",
+        "ref": ""
+      }
+    ],
+    "stack": [
+      "Django", "PostgreSQL", "Docker", "Gunicorn", "Nginx",
+      "AWS EC2", "AWS RDS", "AWS S3", "AWS IAM", "Cloudflare"
+    ],
+    "problem": {
+      "heading": "The problem",
+      "paragraphs": [
+        "Question-based study platform with real content and active users. The system was started on Render — adequate for the MVP. As the platform grew, practical limitations emerged: the instance hibernating on idle, no persistent media file storage between deploys, and the need for more control over the infrastructure.",
+        "The decision to migrate to AWS was not made out of technical trend-following. Each migration component solved a concrete problem: EC2 eliminates hibernation, RDS externalises the database with managed backups, S3 persists media files between redeploys, and Cloudflare handles DNS and TLS from the front.",
+        "The technical angle of this case: putting the full stack into production 'from DNS to database' — Cloudflare → Nginx → Gunicorn → Django → RDS — and understanding what breaks at each layer."
+      ]
+    },
+    "architecture": {
+      "heading": "Architecture",
+      "description": "Cloudflare manages DNS and terminates TLS. EC2 runs a Docker container with Nginx (reverse proxy) in front of Gunicorn serving Django. Database on RDS PostgreSQL (separate VPC, no public IP). Media files on S3 via django-storages. IAM with least-privilege policy for the bucket. RDS Security Group accepts connections only from the EC2 Security Group — no internet access. Environment-specific settings via DJANGO_SETTINGS_MODULE environment variable. The decision to separate migrations from the Docker CMD was made after the first production incident.",
+      "diagram_note": "'From DNS to database' diagram — Phase 5"
+    },
+    "decisions": [
+      {
+        "label": "DECISION",
+        "title": "Layered architecture from the first commit",
+        "items": [
+          {
+            "key": "Problem",
+            "value": "Django projects that start without layer separation accumulate business logic in views and models. The more the system grows, the harder refactoring becomes — and the more tests become coupled to the HTTP layer."
+          },
+          {
+            "key": "Choice",
+            "value": "Abstract BaseModel with UUID as PK and created_at/updated_at fields inherited by all models. Environment-specific settings (base, development, production, testing) via DJANGO_SETTINGS_MODULE. Testing settings use in-memory SQLite + MD5Hasher — instead of the default bcrypt — making the test suite approximately 100x faster without losing logic coverage."
+          },
+          {
+            "key": "Result",
+            "value": "~3,171 lines of tests with no dependency on external infrastructure. Suite runs locally and in CI with acceptable time. New models inherit UUID PK and timestamps automatically."
+          }
+        ]
+      },
+      {
+        "label": "DECISION",
+        "title": "AWS deployment in phases, not all at once",
+        "items": [
+          {
+            "key": "Problem",
+            "value": "Migrating all components at the same time — EC2, RDS, S3, Cloudflare, Security Groups, Docker — in a single moment creates multiple simultaneous failure points. When something breaks, isolating the cause becomes difficult."
+          },
+          {
+            "key": "Choice",
+            "value": "Phased migration: EC2 working with SQLite before provisioning RDS. RDS accessible before configuring restrictive Security Groups. S3 configured and tested before pointing DNS. Each phase has an acceptance criterion before moving to the next."
+          },
+          {
+            "key": "Result",
+            "value": "Each problem appeared in one layer at a time, isolated and diagnosable. No rollback of multiple simultaneous pieces required."
+          }
+        ]
+      },
+      {
+        "label": "DECISION",
+        "title": "RDS Security Group accepts only the EC2 SG",
+        "items": [
+          {
+            "key": "Problem",
+            "value": "Initial RDS configuration with an open Security Group (0.0.0.0/0) to test connectivity. Production database with a public IP and port 5432 accessible from the internet."
+          },
+          {
+            "key": "Alternatives",
+            "value": "Restrict by fixed EC2 IP — fragile if the EC2 is recreated (IP changes). Keep it open and protect with a strong password — security by obscurity, not by design."
+          },
+          {
+            "key": "Choice",
+            "value": "Inbound rule on the RDS SG that accepts connections on port 5432 only from the EC2 Security Group, not from individual IPs. Added sslmode=require in Django's connection string. The database has no public IP — it exists only inside the VPC."
+          },
+          {
+            "key": "Result",
+            "value": "RDS inaccessible from the internet by network design, not by password. Regardless of which EC2 replaces the current one, the SG rule remains valid."
+          }
+        ]
+      },
+      {
+        "label": "DECISION",
+        "title": "Media files on S3, not on the EC2 filesystem",
+        "items": [
+          {
+            "key": "Problem",
+            "value": "Media files saved on the EC2 filesystem are lost on every container redeploy or instance recreation. Discovered in practice: after the first production redeploy, question images returned 404s."
+          },
+          {
+            "key": "Choice",
+            "value": "django-storages + boto3 with S3 backend. MEDIA_URL points to the bucket. IAM with least-privilege policy: the application user has only s3:GetObject, s3:PutObject and s3:DeleteObject on the specific bucket — no access to other AWS resources."
+          },
+          {
+            "key": "Result",
+            "value": "Media files persist between redeploys and instance recreations. Bucket with restricted IAM policy — blast radius limited if credentials are compromised."
+          }
+        ]
+      },
+      {
+        "label": "DECISION",
+        "title": "Migrations separated from the container startup CMD",
+        "items": [
+          {
+            "key": "Problem",
+            "value": "The Dockerfile CMD ran migrate before starting Gunicorn. With multiple replicas or restarts, migrations could run in parallel — causing a race condition on schema changes. Discovered in production when two instances started simultaneously."
+          },
+          {
+            "key": "Alternatives",
+            "value": "Manual migrations — eliminates the risk but requires human intervention on every deploy. Entrypoint with distributed lock — adds complexity without guarantees across all providers."
+          },
+          {
+            "key": "Choice",
+            "value": "Dedicated migration job that runs before replica deployment. Container CMD now starts only Gunicorn. The separation makes explicit that migrations are a database operation — not an application one — and must run exactly once per deploy."
+          },
+          {
+            "key": "Result",
+            "value": "No migration race conditions since the change. Container restart does not run migrations. Clearer deploy process: migration → health check → traffic."
+          }
+        ]
+      }
+    ],
+    "production": {
+      "heading": "What broke and how I fixed it",
+      "incidents": [
+        {
+          "marker": "INCIDENT",
+          "title": "Media files lost after redeploy",
+          "items": [
+            {
+              "key": "Symptom",
+              "value": "After the first production redeploy, all images linked to questions returned 404 errors. The files had been saved to the EC2 filesystem inside the container — which was replaced by the new deploy."
+            },
+            {
+              "key": "Cause",
+              "value": "Container filesystem is ephemeral by design. MEDIA_ROOT pointed to a local directory inside the container. Files not persisted externally are lost when the container is recreated."
+            },
+            {
+              "key": "Fix",
+              "value": "Migrated existing files to S3 via AWS CLI. Configured django-storages with S3 backend. From that point on, uploads go directly to the bucket and survive any number of redeploys."
+            }
+          ]
+        },
+        {
+          "marker": "INCIDENT",
+          "title": "Migrations running in parallel on multiple replica startup",
+          "items": [
+            {
+              "key": "Symptom",
+              "value": "With the Dockerfile CMD running migrate on startup, when two instances came up simultaneously during a deploy, both tried to apply the same migrations at the same time. Database lock error."
+            },
+            {
+              "key": "Fix",
+              "value": "Separated migrations into a dedicated job, run before replicas start. Container CMD now only starts Gunicorn. The execution order became explicit and controlled."
+            }
+          ]
+        },
+        {
+          "marker": "INCIDENT",
+          "title": "RDS Security Group publicly accessible during testing phase",
+          "items": [
+            {
+              "key": "Symptom",
+              "value": "To verify connectivity during migration, the RDS Security Group was temporarily opened to 0.0.0.0/0. The database was accessible from the internet with a public IP for part of the configuration process."
+            },
+            {
+              "key": "Fix",
+              "value": "Replaced the 0.0.0.0/0 rule with a direct reference to the EC2 Security Group. RDS without a public IP. sslmode=require in the connection string. Done immediately upon confirming that SG-based connectivity worked correctly."
+            }
+          ]
+        }
+      ]
+    },
+    "result": {
+      "heading": "Result",
+      "paragraphs": [
+        "Platform with 800 questions across 13 subjects, operating in production on AWS. ~3,171 lines of automated tests with a fast suite thanks to MD5Hasher and in-memory SQLite in the testing environment.",
+        "Render → AWS migration completed without data loss. Infrastructure with clear separation of responsibilities: Cloudflare (DNS/TLS) → Nginx (proxy) → Gunicorn (WSGI) → Django → RDS (database). Persistent media files on S3. RDS Security Group with no internet exposure."
+      ]
+    },
+    "learning": {
+      "heading": "Learning",
+      "text": "Incremental migration — one layer at a time, with an acceptance criterion before moving forward — is the only way to diagnose what breaks without collapsing everything at once. And security by network design (RDS SG only accepting the EC2 SG) is more reliable than security by password: it eliminates the attack surface before needing a credential."
+    },
+    "navigation": {
+      "back_label": "← Açaí Management",
+      "back_url": "/en/cases/acai-management.html",
+      "next_label": "Automation & Web Scraping →",
+      "next_url": "/en/cases/automation-scraping.html"
+    }
+  }
+}
