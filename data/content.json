@@ -1,0 +1,194 @@
+{
+  "pt": {
+    "meta": {
+      "title": "Paulo Souza — Desenvolvedor Backend Python",
+      "description": "Portfólio de Paulo Souza — Backend Python. Três sistemas em produção, SaaS multi-tenant com cliente pagante, infraestrutura AWS."
+    },
+    "hero": {
+      "name": "Paulo Souza",
+      "role": "Desenvolvedor Backend Python",
+      "tagline": "Construí e mantenho sozinho três sistemas em produção — incluindo um SaaS multi-tenant com cliente pagante. Da modelagem de dados ao deploy, com testes, CI/CD e infraestrutura na AWS.",
+      "proof_chips": [
+        "SaaS em produção com cliente pagante",
+        "Infraestrutura AWS montada na mão",
+        "CI/CD com gate de testes"
+      ],
+      "cta_cv": "Baixar CV",
+      "cta_github": "GitHub",
+      "cta_linkedin": "LinkedIn",
+      "cta_email": "E-mail"
+    },
+    "stack": {
+      "heading": "Stack",
+      "groups": [
+        {
+          "label": "Linguagens & Frameworks",
+          "items": ["Python", "Django", "Django REST Framework", "FastAPI", "JavaScript", "HTML", "CSS", "Bootstrap"]
+        },
+        {
+          "label": "Banco de Dados",
+          "items": ["PostgreSQL", "SQL", "SQLite", "Neon"]
+        },
+        {
+          "label": "Infra & DevOps",
+          "items": ["AWS (EC2, RDS, S3, IAM, Security Groups)", "Docker", "Linux", "Nginx", "Gunicorn", "Cloudflare", "Git", "GitHub Actions", "pytest", "Ruff", "rclone"]
+        },
+        {
+          "label": "Conceitos",
+          "items": ["APIs REST", "Autenticação JWT", "SaaS Multi-Tenant", "PWA", "RAG / Embeddings", "CI/CD", "Web Scraping assíncrono"]
+        }
+      ]
+    },
+    "cases": [
+      {
+        "slug": "barber-cashflow",
+        "name": "Barber Cashflow",
+        "status": "EM PRODUÇÃO",
+        "tagline": "SaaS multi-tenant que leva agendamento, venda, comissão, estoque e caixa de uma barbearia real à produção.",
+        "metric": "+R$ 245 mil transacionados",
+        "problem_solved": "N+1 na listagem de vendas: 20 vendas geravam ~61 queries — corrigido com select_related + prefetch_related.",
+        "stack_chips": ["Django", "DRF", "PostgreSQL", "Docker", "PWA"]
+      },
+      {
+        "slug": "gestao-acai",
+        "name": "Gestão de Açaí",
+        "status": "EM PRODUÇÃO",
+        "tagline": "Gestão operacional e financeira em uso diário por funcionários de um estabelecimento real da família.",
+        "metric": "Fechamento de caixa: ~1h → ~10min",
+        "problem_solved": "Deploy direto sem testes: montei CI/CD com gate de 80% e backup diário para Google Drive.",
+        "stack_chips": ["Django", "PostgreSQL", "GitHub Actions", "pytest", "Ruff"]
+      },
+      {
+        "slug": "nicia-track",
+        "name": "Nícia Track",
+        "status": "EM PRODUÇÃO",
+        "tagline": "Plataforma de estudos construída do domínio à infraestrutura AWS — do DNS ao banco.",
+        "metric": "800 questões / 13 disciplinas",
+        "problem_solved": "Media perdida a cada redeploy no PaaS gratuito — migrei para AWS com S3 + django-storages.",
+        "stack_chips": ["Django", "PostgreSQL", "AWS", "Docker", "Nginx"]
+      },
+      {
+        "slug": "automacao-scraping",
+        "name": "Automação e Web Scraping",
+        "status": "CONCLUÍDO",
+        "tagline": "Serviço de automação (desafio técnico) que consulta portal público e devolve dados estruturados + screenshot via API.",
+        "metric": "6 incidentes de produção resolvidos",
+        "problem_solved": "networkidle nunca resolvia (scripts de analytics) — substituído por espera em seletor específico.",
+        "stack_chips": ["FastAPI", "Playwright", "Docker", "Nginx", "AWS EC2"]
+      }
+    ],
+    "about": {
+      "heading": "Sobre",
+      "paragraphs": [
+        "Autodidata. Tenho três sistemas em produção que constru&iacute; e mantenho sozinho — do problema ao deploy, com testes, CI/CD e infraestrutura real.",
+        "Entre 2022 e 2026 morei na Irlanda, onde trabalhei como supervisor operacional em uma rede de conveniência por três anos e cursei dois anos do BSc em Ciência da Computação. O inglês veio de imersão. O domínio de negócio veio de operação real: caixa, estoque, comissão, fechamento diário. É por isso que os sistemas que construo são de gestão operacional e financeira — eu já fui o usuário desse tipo de software.",
+        "Procuro uma equipe onde eu possa contribuir desde o primeiro dia, aprender com código que não escrevi e receber revisão de quem tem mais contexto do que eu."
+      ]
+    },
+    "contact": {
+      "heading": "Contato",
+      "email": "paulorgs.dev@gmail.com",
+      "phone": "(38) 9 9136-7737",
+      "location": "Buritizeiro — MG · Disponível para presencial, híbrido ou remoto",
+      "github_url": "https://github.com/paulo9405",
+      "linkedin_url": "https://linkedin.com/in/paulorgs",
+      "cv_filename": "PauloSouza-CV-2026-PT.pdf"
+    }
+  },
+  "en": {
+    "meta": {
+      "title": "Paulo Souza — Backend Python Developer",
+      "description": "Portfolio of Paulo Souza — Backend Python Developer. Three systems in production, multi-tenant SaaS with a paying client, AWS infrastructure."
+    },
+    "hero": {
+      "name": "Paulo Souza",
+      "role": "Backend Python Developer",
+      "tagline": "I built and maintain three production systems on my own — including a multi-tenant SaaS with a paying client. From data modelling to deployment, with tests, CI/CD and AWS infrastructure.",
+      "proof_chips": [
+        "SaaS in production with a paying client",
+        "AWS infrastructure built from scratch",
+        "CI/CD with test coverage gate"
+      ],
+      "cta_cv": "Download CV",
+      "cta_github": "GitHub",
+      "cta_linkedin": "LinkedIn",
+      "cta_email": "E-mail"
+    },
+    "stack": {
+      "heading": "Stack",
+      "groups": [
+        {
+          "label": "Languages & Frameworks",
+          "items": ["Python", "Django", "Django REST Framework", "FastAPI", "JavaScript", "HTML", "CSS", "Bootstrap"]
+        },
+        {
+          "label": "Databases",
+          "items": ["PostgreSQL", "SQL", "SQLite", "Neon"]
+        },
+        {
+          "label": "Infrastructure & DevOps",
+          "items": ["AWS (EC2, RDS, S3, IAM, Security Groups)", "Docker", "Linux", "Nginx", "Gunicorn", "Cloudflare", "Git", "GitHub Actions", "pytest", "Ruff", "rclone"]
+        },
+        {
+          "label": "Concepts",
+          "items": ["REST APIs", "JWT Authentication", "Multi-Tenant SaaS", "PWA", "RAG / Embeddings", "CI/CD", "Async Web Scraping"]
+        }
+      ]
+    },
+    "cases": [
+      {
+        "slug": "barber-cashflow",
+        "name": "Barber Cashflow",
+        "status": "IN PRODUCTION",
+        "tagline": "Multi-tenant SaaS that brings scheduling, sales, commissions, inventory and cash flow of a real barbershop into production.",
+        "metric": "+R$ 245k processed",
+        "problem_solved": "N+1 on sales listing: 20 sales triggered ~61 queries — fixed with select_related + prefetch_related.",
+        "stack_chips": ["Django", "DRF", "PostgreSQL", "Docker", "PWA"]
+      },
+      {
+        "slug": "gestao-acai",
+        "name": "Açaí Management",
+        "status": "IN PRODUCTION",
+        "tagline": "Operational and financial management system used daily by staff at a real family business.",
+        "metric": "Cash closing: ~1h → ~10min",
+        "problem_solved": "Direct push-to-deploy without tests: built CI/CD with 80% coverage gate and daily backup to Google Drive.",
+        "stack_chips": ["Django", "PostgreSQL", "GitHub Actions", "pytest", "Ruff"]
+      },
+      {
+        "slug": "nicia-track",
+        "name": "Nícia Track",
+        "status": "IN PRODUCTION",
+        "tagline": "Study platform built end-to-end from domain to AWS infrastructure — from DNS to the database.",
+        "metric": "800 questions / 13 subjects",
+        "problem_solved": "Media files lost on every PaaS redeploy — migrated to AWS with S3 + django-storages.",
+        "stack_chips": ["Django", "PostgreSQL", "AWS", "Docker", "Nginx"]
+      },
+      {
+        "slug": "automacao-scraping",
+        "name": "Automation & Web Scraping",
+        "status": "COMPLETED",
+        "tagline": "Automation service (technical challenge) that queries a public portal and returns structured data + screenshot via API.",
+        "metric": "6 production incidents resolved",
+        "problem_solved": "networkidle never settled (analytics scripts) — replaced with a wait on a specific selector.",
+        "stack_chips": ["FastAPI", "Playwright", "Docker", "Nginx", "AWS EC2"]
+      }
+    ],
+    "about": {
+      "heading": "About",
+      "paragraphs": [
+        "Self-taught. I have three production systems I built and maintain on my own — from the problem to deployment, with tests, CI/CD and real infrastructure.",
+        "Between 2022 and 2026 I lived in Ireland, working as an operational supervisor at a convenience store chain for three years and studying two years of a BSc in Computer Science. My English came from immersion. My business domain knowledge came from real operations: till management, inventory, commissions, daily closing. That is why the systems I build are operational and financial management tools — I have been the user of this kind of software.",
+        "I am looking for a team where I can contribute from day one, learn from code I did not write, and receive feedback from people with more context than me."
+      ]
+    },
+    "contact": {
+      "heading": "Contact",
+      "email": "paulorgs.dev@gmail.com",
+      "phone": "+55 38 9 9136-7737",
+      "location": "Buritizeiro — MG, Brazil · Available for on-site, hybrid or remote",
+      "github_url": "https://github.com/paulo9405",
+      "linkedin_url": "https://linkedin.com/in/paulorgs",
+      "cv_filename": "PauloSouza-CV-2026-PT.pdf"
+    }
+  }
+}

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="{{ lang }}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ meta.title }}</title>
+  <meta name="description" content="{{ meta.description }}">
+
+  <!-- hreflang -->
+  <link rel="alternate" hreflang="pt-BR" href="https://portfolio.paulodev.net/">
+  <link rel="alternate" hreflang="en" href="https://portfolio.paulodev.net/en/">
+  <link rel="alternate" hreflang="x-default" href="https://portfolio.paulodev.net/">
+
+  <link rel="stylesheet" href="{{ assets_root }}assets/css/main.css">
+</head>
+<body>
+  <header class="site-header">
+    <nav class="nav" aria-label="Navegação principal">
+      <a href="{{ root_url }}" class="nav__brand">Paulo Souza</a>
+      <div class="nav__lang">
+        {% if lang == "pt" %}
+          <span class="nav__lang-current">PT</span>
+          <span class="nav__lang-sep">|</span>
+          <a href="{{ en_url }}" class="nav__lang-link">EN</a>
+        {% else %}
+          <a href="{{ pt_url }}" class="nav__lang-link">PT</a>
+          <span class="nav__lang-sep">|</span>
+          <span class="nav__lang-current">EN</span>
+        {% endif %}
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <p class="site-footer__text">Paulo Souza · {{ "Buritizeiro — MG" if lang == "pt" else "Buritizeiro — MG, Brazil" }}</p>
+  </footer>
+</body>
+</html>

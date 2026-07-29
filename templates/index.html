@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="em-construcao">
+  <p class="em-construcao__status">● EM CONSTRUÇÃO</p>
+  <h1 class="em-construcao__nome">Paulo Souza</h1>
+  <p class="em-construcao__sub">{{ "Desenvolvedor Backend Python" if lang == "pt" else "Backend Python Developer" }}</p>
+  <p class="em-construcao__aviso">{{ "Portfólio em construção — em breve." if lang == "pt" else "Portfolio under construction — coming soon." }}</p>
+</section>
+{% endblock %}
