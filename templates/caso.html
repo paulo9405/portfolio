@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{# ── 1. CABEÇALHO ──────────────────────────────────────────────────────── #}
+<section class="case-header">
+  <div class="container">
+
+    <a href="{{ case.navigation.back_url }}" class="case-back-link">{{ case.navigation.back_label }}</a>
+
+    <div class="case-header__meta-line">
+      <span class="status-badge {{ 'status-badge--on' if case.status_type == 'on' else 'status-badge--off' }}">
+        {{ case.status }}
+      </span>
+      <span class="case-header__sep" aria-hidden="true">·</span>
+      <span class="case-header__period">{{ case.period }}</span>
+    </div>
+
+    <h1 class="case-header__name">{{ case.name }}</h1>
+    <p class="case-header__role">{{ case.role }}</p>
+
+    {% if case.links %}
+    <div class="case-header__links">
+      {% for link in case.links %}
+      <a href="{{ link.url }}"
+         class="btn btn--ghost"
+         {% if link.external %}target="_blank" rel="noopener noreferrer"{% endif %}>
+        {{ link.label }}{% if link.external %} ↗{% endif %}
+      </a>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+  </div>
+</section>
+
+{# ── 2. NÚMEROS ────────────────────────────────────────────────────────── #}
+<section class="case-section section" id="metricas">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-header__label">
+        {% if lang == "pt" %}NÚMEROS{% else %}NUMBERS{% endif %}
+      </span>
+    </div>
+    <div class="metric-grid">
+      {% for m in case.metrics %}
+      <div class="metric-block">
+        <span class="metric-block__value">{{ m.value }}</span>
+        <span class="metric-block__label">{{ m.label }}</span>
+        {% if m.ref %}
+        <span class="metric-block__ref">{{ m.ref }}</span>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# ── 3. STACK ──────────────────────────────────────────────────────────── #}
+<section class="case-section section" id="stack">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-header__label">STACK</span>
+    </div>
+    <div class="chip-list">
+      {% for chip in case.stack %}
+      <span class="chip">{{ chip }}</span>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# ── 4. O PROBLEMA ─────────────────────────────────────────────────────── #}
+<section class="case-section section" id="problema">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-header__label">{{ case.problem.heading | upper }}</span>
+    </div>
+    <div class="case-prose">
+      {% for p in case.problem.paragraphs %}
+      <p>{{ p }}</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# ── 5. ARQUITETURA ────────────────────────────────────────────────────── #}
+<section class="case-section section" id="arquitetura">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-header__label">{{ case.architecture.heading | upper }}</span>
+    </div>
+    {% if case.architecture.diagram_note | default('') %}
+    <div class="case-diagram-placeholder" role="img" aria-label="{{ case.architecture.diagram_note }}">
+      <span class="case-diagram-placeholder__label">{{ case.architecture.diagram_note }}</span>
+    </div>
+    {% endif %}
+    <p class="case-prose__single">{{ case.architecture.description }}</p>
+  </div>
+</section>
+
+{# ── 6. DECISÕES ───────────────────────────────────────────────────────── #}
+<section class="case-section section" id="decisoes">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-header__label">
+        {% if lang == "pt" %}DECISÕES{% else %}DECISIONS{% endif %}
+      </span>
+    </div>
+    <div class="decision-list">
+      {% for d in case.decisions %}
+      <div class="decision-block">
+        <div class="decision-block__header">
+          <span class="decision-block__label">{{ d.label }}</span>
+          <h2 class="decision-block__title">{{ d.title }}</h2>
+        </div>
+        <dl class="decision-block__body">
+          {% for item in d['items'] %}
+          <dt>{{ item.key }}</dt>
+          <dd>{{ item.value }}</dd>
+          {% endfor %}
+        </dl>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# ── 7. PRODUÇÃO ───────────────────────────────────────────────────────── #}
+<section class="case-section section" id="producao">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-header__label">{{ case.production.heading | upper }}</span>
+    </div>
+    <div class="incident-list">
+      {% for inc in case.production.incidents %}
+      <div class="incident-block">
+        <div class="incident-block__header">
+          <span class="incident-block__marker">● {{ inc.marker }}</span>
+          <h2 class="incident-block__title">{{ inc.title }}</h2>
+        </div>
+        <dl class="incident-block__body">
+          {% for item in inc['items'] %}
+          <dt>{{ item.key }}</dt>
+          <dd>{{ item.value }}</dd>
+          {% endfor %}
+        </dl>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# ── 8. RESULTADO ──────────────────────────────────────────────────────── #}
+<section class="case-section section" id="resultado">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-header__label">{{ case.result.heading | upper }}</span>
+    </div>
+    <div class="case-prose">
+      {% for p in case.result.paragraphs %}
+      <p>{{ p }}</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# ── 9. APRENDIZADO ────────────────────────────────────────────────────── #}
+<section class="case-section section" id="aprendizado">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-header__label">{{ case.learning.heading | upper }}</span>
+    </div>
+    <blockquote class="case-learning">
+      <p class="case-learning__text">{{ case.learning.text }}</p>
+    </blockquote>
+  </div>
+</section>
+
+{# ── 10. NAVEGAÇÃO ─────────────────────────────────────────────────────── #}
+<nav class="case-nav" aria-label="{% if lang == 'pt' %}Navegação entre casos{% else %}Case navigation{% endif %}">
+  <div class="container">
+    <div class="case-nav__inner">
+      <a href="{{ case.navigation.back_url }}" class="case-nav__link case-nav__back">
+        {{ case.navigation.back_label }}
+      </a>
+      {% if case.navigation.next_url | default('') %}
+      <a href="{{ case.navigation.next_url }}" class="case-nav__link case-nav__next">
+        {{ case.navigation.next_label }}
+      </a>
+      {% endif %}
+    </div>
+  </div>
+</nav>
+
+{% endblock %}

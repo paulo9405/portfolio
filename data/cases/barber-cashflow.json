@@ -1,0 +1,408 @@
+{
+  "pt": {
+    "slug": "barber-cashflow",
+    "name": "Barber Cashflow",
+    "status": "EM PRODUÇÃO",
+    "status_type": "on",
+    "period": "Novembro 2025 – Atual (ref. 29/07/2026, ~8 meses)",
+    "role": "Produto próprio — desenvolvido, implantado e mantido integralmente por Paulo.",
+    "meta": {
+      "title": "Barber Cashflow — Paulo Souza",
+      "description": "SaaS multi-tenant para barbearias: +R$ 245 mil transacionados, ~7.000 vendas, isolamento multi-tenant com testes, N+1 corrigido em produção."
+    },
+    "links": [
+      {
+        "label": "Vídeo de demonstração",
+        "url": "https://www.youtube.com/watch?v=r9bsFbj2NdE",
+        "external": true
+      }
+    ],
+    "metrics": [
+      {
+        "value": "+R$ 245 mil",
+        "label": "volume transacionado pelo sistema",
+        "ref": "25/11/2025 – 29/07/2026 · ~8 meses"
+      },
+      {
+        "value": "~7.000",
+        "label": "vendas registradas no período",
+        "ref": ""
+      },
+      {
+        "value": "5",
+        "label": "barbeiros operando diariamente",
+        "ref": ""
+      },
+      {
+        "value": "+4.000",
+        "label": "linhas de testes automatizados",
+        "ref": ""
+      }
+    ],
+    "stack": [
+      "Django", "Django REST Framework", "JWT", "PostgreSQL",
+      "Docker", "Nginx", "Cloudflare", "PWA",
+      "OpenAI Embeddings (text-embedding-3-small)", "FAISS"
+    ],
+    "problem": {
+      "heading": "O problema",
+      "paragraphs": [
+        "A barbearia registrava agendamentos, vendas, comissões e caixa de forma manual e dispersa. Sem visibilidade consolidada, fechar o dia exigia reconciliar anotações de fontes diferentes. O pedido inicial era um sistema de agendamento.",
+        "No meio do desenvolvimento veio uma virada: a arquitetura comportava mais de uma barbearia. O sistema virou SaaS. Essa decisão trouxe, de uma vez, isolamento de dados entre tenants, responsabilidade sobre LGPD e a necessidade de subir atualizações sem interromper uma operação que já rodava com cliente real.",
+        "O sistema hoje registra vendas por forma de pagamento (PIX, cartão, dinheiro), calcula comissão por barbeiro por venda, controla estoque e fecha o caixa com conciliação automática. Funciona como PWA — instalável no celular do barbeiro, com operação offline parcial."
+      ]
+    },
+    "architecture": {
+      "heading": "Arquitetura",
+      "description": "Django + DRF servindo a API REST com autenticação JWT; PostgreSQL como banco compartilhado entre tenants; isolamento por tenant_id resolvido via TenantMiddleware a cada request; Nginx como reverse proxy; Docker para build reproduzível; Cloudflare para SSL e CDN. A camada RAG corre separada: dados do sistema são chunked, convertidos em embeddings com a API da OpenAI (text-embedding-3-small) e indexados com FAISS. PWA com service worker para uso offline parcial.",
+      "diagram_note": "Diagrama de arquitetura — Fase 5"
+    },
+    "decisions": [
+      {
+        "label": "DECISÃO",
+        "title": "Multi-tenancy: shared-db com tenant_id",
+        "items": [
+          {
+            "key": "Problema",
+            "value": "Múltiplas barbearias precisam de isolamento total de dados. Um barbeiro de um salão não pode ver — nem acessar por erro — os dados de outro."
+          },
+          {
+            "key": "Alternativas",
+            "value": "Banco separado por tenant: isolamento máximo, mas custo operacional alto e migrations em N bancos a cada mudança de schema. Schema separado no PostgreSQL: migrations multiplicadas e roteamento de conexão complexo."
+          },
+          {
+            "key": "Escolha",
+            "value": "Base compartilhada com tenant_id em cada tabela relevante. TenantMiddleware resolve o tenant atual a partir de três fontes em ordem de prioridade: subdomínio → cabeçalho HTTP → parâmetro de query. O filtro por tenant é obrigatório em toda queryset exposta."
+          },
+          {
+            "key": "Resultado",
+            "value": "Múltiplas barbearias na mesma instância Django e no mesmo banco PostgreSQL, sem vazamento entre elas. Adicionar novo tenant não requer redeploy nem nova instância de banco."
+          }
+        ]
+      },
+      {
+        "label": "DECISÃO",
+        "title": "Testes de isolamento retornam 404, não 403",
+        "items": [
+          {
+            "key": "Problema",
+            "value": "A suíte de testes precisa provar que um tenant não acessa dados de outro. A resposta de erro importa tanto quanto a negação de acesso em si."
+          },
+          {
+            "key": "Alternativas",
+            "value": "403 (Forbidden): semanticamente correto — o recurso existe, mas o acesso é negado. 404 (Not Found): não revela se o recurso existe ou não."
+          },
+          {
+            "key": "Escolha",
+            "value": "404. A view trata o recurso de outro tenant como inexistente para o tenant solicitante. Os testes de isolamento tentam ativamente acessar dados de outro tenant e verificam que recebem 404 — não 403."
+          },
+          {
+            "key": "Resultado",
+            "value": "Isolamento validado por testes automatizados. Um atacante com credenciais válidas de um tenant não consegue nem confirmar a existência de recursos de outros tenants."
+          }
+        ]
+      },
+      {
+        "label": "DECISÃO",
+        "title": "transaction.atomic no cancelamento de venda",
+        "items": [
+          {
+            "key": "Problema",
+            "value": "Cancelar uma venda toca três domínios simultaneamente: estoque (devolução de produto), comissão do barbeiro (estorno proporcional) e caixa (lançamento de cancelamento). Uma exceção no meio da operação deixaria os três em estados inconsistentes entre si."
+          },
+          {
+            "key": "Escolha",
+            "value": "transaction.atomic() envolve toda a operação de cancelamento. Se qualquer etapa falhar — por exceção Python, erro de banco ou violação de constraint — o PostgreSQL reverte todas as alterações automaticamente."
+          },
+          {
+            "key": "Resultado",
+            "value": "Garantia de atomicidade delegada ao banco. A lógica de negócio não precisa implementar rollback manual. Em 8 meses de operação: zero registro de inconsistência financeira por cancelamento parcial."
+          }
+        ]
+      },
+      {
+        "label": "DECISÃO",
+        "title": "Soft delete para preservar histórico financeiro",
+        "items": [
+          {
+            "key": "Problema",
+            "value": "Registros financeiros precisam de rastreabilidade completa. Excluir fisicamente uma venda apagaria o histórico contábil e quebraria a conciliação de períodos já fechados."
+          },
+          {
+            "key": "Escolha",
+            "value": "Soft delete com campo is_deleted e SoftDeleteManager que filtra automaticamente registros excluídos em todas as queries padrão. Queries de auditoria e relatórios usam .all_objects para acesso irrestrito ao histórico."
+          },
+          {
+            "key": "Resultado",
+            "value": "O usuário cancela registros sem perder histórico. Relatórios de períodos anteriores permanecem íntegros mesmo após cancelamentos posteriores."
+          }
+        ]
+      },
+      {
+        "label": "DECISÃO",
+        "title": "RAG real para o assistente interno",
+        "items": [
+          {
+            "key": "Problema",
+            "value": "Os barbeiros e o dono precisam consultar dados do sistema em linguagem natural — saldo do dia, comissão da semana, produto com estoque baixo. Keyword search não entende variações naturais de pergunta nem contexto financeiro."
+          },
+          {
+            "key": "Escolha",
+            "value": "Pipeline RAG completo: chunking semântico dos dados do sistema → embeddings com OpenAI text-embedding-3-small → índice FAISS para busca vetorial por similaridade → contexto relevante injetado no prompt de resposta."
+          },
+          {
+            "key": "Resultado",
+            "value": "O usuário pergunta em linguagem natural e recebe resposta contextualizada com dados reais do sistema, sem navegar por menus. Não é keyword search com GPT na frente — é retrieval semântico de verdade."
+          }
+        ]
+      }
+    ],
+    "production": {
+      "heading": "O que quebrou e como resolvi",
+      "incidents": [
+        {
+          "marker": "INCIDENTE",
+          "title": "N+1 na listagem de vendas",
+          "items": [
+            {
+              "key": "Sintoma",
+              "value": "A listagem de 20 vendas demorava visivelmente. O cliente notou a lentidão semanas depois de o sistema entrar em produção — não havia monitoramento de query count configurado no início."
+            },
+            {
+              "key": "Investigação",
+              "value": "Django Debug Toolbar mostrou 61 queries para renderizar 20 registros: 1 query para listar as vendas + 20 queries para o barbeiro de cada venda + 20 para o serviço + 20 para o agendamento associado."
+            },
+            {
+              "key": "Causa",
+              "value": "As relações FK (barbeiro, serviço, agendamento) não estavam sendo carregadas previamente na queryset da view. O ORM emitia uma query separada para cada objeto no momento em que o template acessava cada FK."
+            },
+            {
+              "key": "Correção",
+              "value": "select_related('barbeiro', 'servico') para as FKs diretas — vira JOIN único. prefetch_related('agendamento') para a relação inversa — vira query IN separada. Resultado: 61 queries → 3 queries. Mesma listagem, sem alteração no template."
+            }
+          ]
+        }
+      ]
+    },
+    "result": {
+      "heading": "Resultado",
+      "paragraphs": [
+        "+R$ 245 mil em volume transacionado pelo sistema entre 25/11/2025 e 29/07/2026 (~8 meses), com ~7.000 vendas registradas e 5 barbeiros operando diariamente. Recorte por forma de pagamento: PIX R$ 143.335 · Cartão R$ 72.210 · Dinheiro R$ 30.150.",
+        "Zero vazamento de dados entre tenants em 8 meses de operação. Suíte de +4.000 linhas de testes automatizados cobrindo isolamento multi-tenant, atomicidade de operações financeiras, soft delete e a interface RAG."
+      ]
+    },
+    "learning": {
+      "heading": "Aprendizado",
+      "text": "Foi nesse momento que deixei de enxergar o software apenas como código e passei a enxergá-lo como um produto que precisa continuar funcionando enquanto evolui. A virada de sistema único para SaaS — com um cliente real já usando — tornou concreto o que antes era teórico: isolamento de dados, consistência transacional e testes como documentação viva do comportamento esperado."
+    },
+    "navigation": {
+      "back_label": "← Início",
+      "back_url": "/",
+      "next_label": "Gestão de Açaí →",
+      "next_url": "/casos/gestao-acai.html"
+    }
+  },
+  "en": {
+    "slug": "barber-cashflow",
+    "name": "Barber Cashflow",
+    "status": "IN PRODUCTION",
+    "status_type": "on",
+    "period": "November 2025 – Present (ref. 29/07/2026, ~8 months)",
+    "role": "Own product — designed, built, deployed and maintained entirely by Paulo.",
+    "meta": {
+      "title": "Barber Cashflow — Paulo Souza",
+      "description": "Multi-tenant SaaS for barbershops: R$245K in transaction volume, ~7,000 sales, tenant isolation validated by tests, N+1 fixed in production."
+    },
+    "links": [
+      {
+        "label": "Demo video",
+        "url": "https://www.youtube.com/watch?v=r9bsFbj2NdE",
+        "external": true
+      }
+    ],
+    "metrics": [
+      {
+        "value": "R$245K",
+        "label": "in transaction volume processed by the system",
+        "ref": "25/11/2025 – 29/07/2026 · ~8 months"
+      },
+      {
+        "value": "~7,000",
+        "label": "sales recorded in the period",
+        "ref": ""
+      },
+      {
+        "value": "5",
+        "label": "barbers operating daily",
+        "ref": ""
+      },
+      {
+        "value": "+4,000",
+        "label": "lines of automated tests",
+        "ref": ""
+      }
+    ],
+    "stack": [
+      "Django", "Django REST Framework", "JWT", "PostgreSQL",
+      "Docker", "Nginx", "Cloudflare", "PWA",
+      "OpenAI Embeddings (text-embedding-3-small)", "FAISS"
+    ],
+    "problem": {
+      "heading": "The problem",
+      "paragraphs": [
+        "The barbershop tracked appointments, sales, commissions and cash flow manually and across separate tools. Without a consolidated view, closing the day meant reconciling notes from different sources. The original brief was a scheduling system.",
+        "Mid-development came a pivot: the architecture could support more than one barbershop. The system became a SaaS. That decision brought, all at once, data isolation between tenants, LGPD compliance responsibility, and the need to ship updates without disrupting an operation already running with a real paying client.",
+        "The system now records sales by payment method (PIX, card, cash), calculates per-barber commission per sale, manages inventory and closes the daily till with automatic reconciliation. It runs as a PWA — installable on the barber's phone, with partial offline support."
+      ]
+    },
+    "architecture": {
+      "heading": "Architecture",
+      "description": "Django + DRF serving the REST API with JWT authentication; PostgreSQL as the shared tenant database; tenant isolation by tenant_id resolved via TenantMiddleware on each request; Nginx as reverse proxy; Docker for reproducible builds; Cloudflare for SSL and CDN. The RAG layer runs separately: system data is chunked, converted to embeddings via the OpenAI API (text-embedding-3-small) and indexed with FAISS. PWA with service worker for partial offline use.",
+      "diagram_note": "Architecture diagram — Phase 5"
+    },
+    "decisions": [
+      {
+        "label": "DECISION",
+        "title": "Multi-tenancy: shared-db with tenant_id",
+        "items": [
+          {
+            "key": "Problem",
+            "value": "Multiple barbershops need complete data isolation. A barber from one shop must never see — or accidentally access — another shop's data."
+          },
+          {
+            "key": "Alternatives",
+            "value": "Separate database per tenant: maximum isolation, but high operational cost and migrations across N databases for every schema change. Separate PostgreSQL schema per tenant: multiplied migrations and complex connection routing."
+          },
+          {
+            "key": "Choice",
+            "value": "Shared database with tenant_id on each relevant table. TenantMiddleware resolves the current tenant from three sources in priority order: subdomain → HTTP header → query parameter. Tenant filtering is mandatory on every exposed queryset."
+          },
+          {
+            "key": "Result",
+            "value": "Multiple barbershops on the same Django instance and the same PostgreSQL database, with zero cross-tenant leakage. Adding a new tenant requires no redeploy and no new database instance."
+          }
+        ]
+      },
+      {
+        "label": "DECISION",
+        "title": "Isolation tests return 404, not 403",
+        "items": [
+          {
+            "key": "Problem",
+            "value": "The test suite must prove that one tenant cannot access another's data. The error response matters as much as the access denial itself."
+          },
+          {
+            "key": "Alternatives",
+            "value": "403 (Forbidden): semantically correct — the resource exists but access is denied. 404 (Not Found): does not reveal whether the resource exists at all."
+          },
+          {
+            "key": "Choice",
+            "value": "404. The view treats another tenant's resource as non-existent for the requesting tenant. Isolation tests actively attempt to access another tenant's data and verify they receive 404 — not 403."
+          },
+          {
+            "key": "Result",
+            "value": "Isolation validated by automated tests. An attacker with valid credentials for one tenant cannot even confirm the existence of resources belonging to other tenants."
+          }
+        ]
+      },
+      {
+        "label": "DECISION",
+        "title": "transaction.atomic on sale cancellation",
+        "items": [
+          {
+            "key": "Problem",
+            "value": "Cancelling a sale touches three domains simultaneously: inventory (product return), barber commission (proportional reversal) and till (cancellation entry). An exception mid-operation would leave all three in mutually inconsistent states."
+          },
+          {
+            "key": "Choice",
+            "value": "transaction.atomic() wraps the entire cancellation operation. If any step fails — Python exception, database error or constraint violation — PostgreSQL rolls back all changes automatically."
+          },
+          {
+            "key": "Result",
+            "value": "Atomicity guaranteed at the database level. Business logic needs no manual rollback implementation. In 8 months of operation: zero financial inconsistency from partial cancellation."
+          }
+        ]
+      },
+      {
+        "label": "DECISION",
+        "title": "Soft delete to preserve financial history",
+        "items": [
+          {
+            "key": "Problem",
+            "value": "Financial records require complete traceability. Physically deleting a sale would erase the accounting trail and break reconciliation for already-closed periods."
+          },
+          {
+            "key": "Choice",
+            "value": "Soft delete with is_deleted field and SoftDeleteManager that automatically filters deleted records in all standard queries. Audit queries and reports use .all_objects for unrestricted access to full history."
+          },
+          {
+            "key": "Result",
+            "value": "Users cancel records without losing history. Reports for past periods remain intact even after subsequent cancellations."
+          }
+        ]
+      },
+      {
+        "label": "DECISION",
+        "title": "Full RAG pipeline for the internal assistant",
+        "items": [
+          {
+            "key": "Problem",
+            "value": "Barbers and the owner need to query system data in natural language — daily balance, weekly commission, low-stock products. Keyword search does not understand natural question variations or financial context."
+          },
+          {
+            "key": "Choice",
+            "value": "Complete RAG pipeline: semantic chunking of system data → embeddings with OpenAI text-embedding-3-small → FAISS vector index for similarity search → relevant context injected into the response prompt."
+          },
+          {
+            "key": "Result",
+            "value": "Users ask in natural language and receive contextualised answers with real system data, without navigating menus. Not keyword search with GPT on top — real semantic retrieval."
+          }
+        ]
+      }
+    ],
+    "production": {
+      "heading": "What broke and how I fixed it",
+      "incidents": [
+        {
+          "marker": "INCIDENT",
+          "title": "N+1 on the sales listing",
+          "items": [
+            {
+              "key": "Symptom",
+              "value": "Listing 20 sales was noticeably slow. The client flagged the slowness weeks after the system went live — there was no query-count monitoring configured at launch."
+            },
+            {
+              "key": "Investigation",
+              "value": "Django Debug Toolbar showed 61 queries to render 20 records: 1 query to list the sales + 20 for the barber on each sale + 20 for the service + 20 for the associated appointment."
+            },
+            {
+              "key": "Cause",
+              "value": "FK relations (barber, service, appointment) were not being pre-fetched in the view's queryset. The ORM issued a separate query for each object the moment the template accessed each FK."
+            },
+            {
+              "key": "Fix",
+              "value": "select_related('barbeiro', 'servico') for the direct FKs — becomes a single JOIN. prefetch_related('agendamento') for the reverse relation — becomes a separate IN query. Result: 61 queries → 3 queries. Same listing, no template changes."
+            }
+          ]
+        }
+      ]
+    },
+    "result": {
+      "heading": "Result",
+      "paragraphs": [
+        "R$245K in transaction volume processed by the system between 25/11/2025 and 29/07/2026 (~8 months), with ~7,000 sales recorded and 5 barbers operating daily. Payment method breakdown: PIX R$143,335 · Card R$72,210 · Cash R$30,150.",
+        "Zero cross-tenant data leakage in 8 months of operation. The +4,000-line automated test suite covers multi-tenant isolation, financial transaction atomicity, soft delete and the RAG interface."
+      ]
+    },
+    "learning": {
+      "heading": "Learning",
+      "text": "This is when I stopped seeing software as just code and started seeing it as a product that must keep working while it evolves. The pivot from a single-tenant system to a SaaS — with a real client already using it — made concrete what had been theoretical: data isolation, transactional consistency and tests as living documentation of expected behaviour."
+    },
+    "navigation": {
+      "back_label": "← Home",
+      "back_url": "/en/",
+      "next_label": "Açaí Management →",
+      "next_url": "/en/cases/acai-management.html"
+    }
+  }
+}

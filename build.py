@@ -1,13 +1,15 @@
 """
-build.py — gera dist/ a partir de templates/ + data/content.json
+build.py — gera dist/ a partir de templates/ + data/
 
 Uso:
     python build.py
 
 Saída:
-    dist/index.html          (PT)
-    dist/en/index.html       (EN)
-    dist/styleguide.html     (fora do sitemap — noindex)
+    dist/index.html                    (PT home)
+    dist/en/index.html                 (EN home)
+    dist/casos/<slug>.html             (PT casos)
+    dist/en/cases/<slug>.html          (EN casos)
+    dist/styleguide.html               (fora do sitemap — noindex)
 """
 
 import json
@@ -18,6 +20,7 @@ from jinja2 import Environment, FileSystemLoader
 
 ROOT = Path(__file__).parent
 DATA_FILE = ROOT / "data" / "content.json"
+CASES_DIR = ROOT / "data" / "cases"
 TEMPLATES_DIR = ROOT / "templates"
 ASSETS_SRC = ROOT / "assets"
 DIST = ROOT / "dist"
@@ -30,6 +33,15 @@ def load_content() -> dict:
         return json.load(f)
 
 
+def load_cases() -> list[dict]:
+    cases = []
+    if CASES_DIR.exists():
+        for path in sorted(CASES_DIR.glob("*.json")):
+            with path.open(encoding="utf-8") as f:
+                cases.append(json.load(f))
+    return cases
+
+
 def copy_assets():
     dest = DIST / "assets"
     if dest.exists():
@@ -37,7 +49,7 @@ def copy_assets():
     shutil.copytree(ASSETS_SRC, dest)
 
 
-def base_ctx(lang: str, data: dict, canonical: str, hreflang_pt: str, hreflang_en: str) -> dict:
+def home_ctx(lang: str, data: dict, canonical: str, hreflang_pt: str, hreflang_en: str) -> dict:
     is_en = lang == "en"
     return {
         "lang": lang,
@@ -49,7 +61,6 @@ def base_ctx(lang: str, data: dict, canonical: str, hreflang_pt: str, hreflang_e
         "root_url": "/en/" if is_en else "/",
         "pt_url": "/",
         "en_url": "/en/",
-        # content sections
         "hero": data["hero"],
         "stack": data["stack"],
         "cases": data["cases"],
@@ -58,17 +69,58 @@ def base_ctx(lang: str, data: dict, canonical: str, hreflang_pt: str, hreflang_e
     }
 
 
-def build_lang(env: Environment, content: dict, lang: str):
-    is_en = lang == "en"
-    data = content[lang]
-    out_dir = DIST / "en" if is_en else DIST
-    out_dir.mkdir(parents=True, exist_ok=True)
+def build_home(env: Environment, content: dict):
+    for lang in ("pt", "en"):
+        is_en = lang == "en"
+        data = content[lang]
+        out_dir = DIST / "en" if is_en else DIST
+        out_dir.mkdir(parents=True, exist_ok=True)
 
-    canonical = f"{BASE_URL}/en/" if is_en else f"{BASE_URL}/"
-    ctx = base_ctx(lang, data, canonical, f"{BASE_URL}/", f"{BASE_URL}/en/")
+        canonical = f"{BASE_URL}/en/" if is_en else f"{BASE_URL}/"
+        ctx = home_ctx(lang, data, canonical, f"{BASE_URL}/", f"{BASE_URL}/en/")
 
-    tmpl = env.get_template("index.html")
-    (out_dir / "index.html").write_text(tmpl.render(**ctx), encoding="utf-8")
+        tmpl = env.get_template("index.html")
+        (out_dir / "index.html").write_text(tmpl.render(**ctx), encoding="utf-8")
+
+
+def build_cases(env: Environment, cases: list[dict]):
+    for case_data in cases:
+        pt_slug = case_data["pt"]["slug"]
+        en_slug = case_data["en"]["slug"]
+
+        for lang in ("pt", "en"):
+            is_en = lang == "en"
+            case = case_data[lang]
+            slug = en_slug if is_en else pt_slug
+
+            if is_en:
+                out_dir = DIST / "en" / "cases"
+                canonical = f"{BASE_URL}/en/cases/{slug}.html"
+                hreflang_pt = f"{BASE_URL}/casos/{pt_slug}.html"
+                hreflang_en = canonical
+            else:
+                out_dir = DIST / "casos"
+                canonical = f"{BASE_URL}/casos/{slug}.html"
+                hreflang_pt = canonical
+                hreflang_en = f"{BASE_URL}/en/cases/{en_slug}.html"
+
+            out_dir.mkdir(parents=True, exist_ok=True)
+
+            ctx = {
+                "lang": lang,
+                "lang_code": "en" if is_en else "pt-BR",
+                "meta": case["meta"],
+                "canonical_url": canonical,
+                "hreflang_pt": hreflang_pt,
+                "hreflang_en": hreflang_en,
+                "root_url": "/en/" if is_en else "/",
+                "pt_url": "/",
+                "en_url": "/en/",
+                "case": case,
+            }
+
+            tmpl = env.get_template("caso.html")
+            (out_dir / f"{slug}.html").write_text(tmpl.render(**ctx), encoding="utf-8")
 
 
 def build_styleguide(env: Environment):
@@ -97,11 +149,12 @@ def main():
     DIST.mkdir()
 
     content = load_content()
+    cases = load_cases()
     env = Environment(loader=FileSystemLoader(str(TEMPLATES_DIR)), autoescape=True)
 
     copy_assets()
-    build_lang(env, content, "pt")
-    build_lang(env, content, "en")
+    build_home(env, content)
+    build_cases(env, cases)
     build_styleguide(env)
 
     pages = list(DIST.rglob("*.html"))

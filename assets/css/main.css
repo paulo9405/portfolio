@@ -840,7 +840,170 @@ p + p { margin-top: var(--sp-4); }
   border-color: var(--text-muted);
 }
 
-/* === 21. EM CONSTRUÇÃO (Fase 0 / placeholder) =========================== */
+/* === 21. CASE PAGE ====================================================== */
+
+/* Cabeçalho do caso */
+.case-header {
+  padding-block: var(--sp-12) var(--sp-10);
+  border-bottom: 1px solid var(--border);
+}
+
+.case-back-link {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--text-subtle);
+  text-decoration: none;
+  letter-spacing: 0.04em;
+  margin-bottom: var(--sp-6);
+  transition: color var(--duration-fast) var(--easing);
+}
+
+.case-back-link:hover { color: var(--text-muted); }
+
+.case-header__meta-line {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--sp-2) var(--sp-3);
+  margin-bottom: var(--sp-4);
+}
+
+.case-header__sep {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--text-subtle);
+}
+
+.case-header__period {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--text-subtle);
+  letter-spacing: 0.04em;
+}
+
+.case-header__name {
+  font-family: var(--font-display);
+  font-size: var(--text-4xl);
+  font-weight: var(--weight-semi);
+  color: var(--text);
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  margin-bottom: var(--sp-3);
+}
+
+.case-header__role {
+  font-size: var(--text-base);
+  color: var(--text-muted);
+  max-width: 60ch;
+  line-height: 1.5;
+  margin-bottom: var(--sp-6);
+}
+
+.case-header__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+}
+
+/* Seções do caso */
+.case-section {
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+/* Prosa */
+.case-prose {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+  max-width: 68ch;
+}
+
+.case-prose p {
+  font-size: var(--text-md);
+  color: var(--text);
+  line-height: 1.7;
+}
+
+.case-prose__single {
+  font-size: var(--text-md);
+  color: var(--text);
+  line-height: 1.7;
+  max-width: 68ch;
+}
+
+/* Placeholder do diagrama (Fase 5) */
+.case-diagram-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 160px;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--sp-6);
+  background-color: var(--bg-surface);
+}
+
+.case-diagram-placeholder__label {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--text-subtle);
+  letter-spacing: 0.08em;
+}
+
+/* Métrica com referência */
+.metric-block__ref {
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  color: var(--text-subtle);
+  letter-spacing: 0.04em;
+  margin-top: var(--sp-1);
+}
+
+/* Aprendizado */
+.case-learning {
+  border-left: 3px solid var(--primary);
+  padding-left: var(--sp-5);
+  margin: 0;
+}
+
+.case-learning__text {
+  font-size: var(--text-lg);
+  color: var(--text);
+  line-height: 1.65;
+  font-style: italic;
+  max-width: 65ch;
+}
+
+/* Navegação entre casos */
+.case-nav {
+  padding-block: var(--sp-10);
+  border-top: 1px solid var(--border);
+  margin-top: auto;
+}
+
+.case-nav__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  flex-wrap: wrap;
+}
+
+.case-nav__link {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color var(--duration-fast) var(--easing);
+}
+
+.case-nav__link:hover { color: var(--primary-text); }
+
+.case-nav__back { margin-right: auto; }
+.case-nav__next { margin-left: auto; }
+
+/* === 22. EM CONSTRUÇÃO (Fase 0 / placeholder) =========================== */
 
 .em-construcao {
   display: flex;
