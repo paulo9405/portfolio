@@ -1,0 +1,294 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container" style="padding-block: var(--sp-12);">
+
+  <h1 style="font-family: var(--font-mono); font-size: var(--text-lg); color: var(--text-muted); font-weight: var(--weight-regular); margin-bottom: var(--sp-12); letter-spacing: 0.06em;">
+    STYLEGUIDE — Componentes do design system
+  </h1>
+
+  <!-- ─── CORES ─────────────────────────────────────────────────────────── -->
+  <section class="sg-section">
+    <h2 class="sg-section__title">Cores</h2>
+    <div class="sg-row">
+      {% set swatches = [
+        ("--bg",          "#0d0d0d",  "bg"),
+        ("--bg-surface",  "#131313",  "surface"),
+        ("--bg-raised",   "#1a1a1a",  "raised"),
+        ("--border",      "#242424",  "border"),
+        ("--text",        "#e4e4e4",  "text"),
+        ("--text-muted",  "#888888",  "muted"),
+        ("--text-subtle", "#4a4a4a",  "subtle"),
+        ("--primary",     "#3d8a5f",  "primary"),
+        ("--primary-text","#5ab882",  "primary-t"),
+        ("--signal",      "#f5a623",  "signal"),
+        ("--status-on",   "#52b788",  "on"),
+        ("--status-off",  "#666666",  "off"),
+      ] %}
+      {% for var, hex, label in swatches %}
+      <div>
+        <div class="sg-swatch" style="background: {{ hex }};"></div>
+        <p class="sg-swatch-label">{{ label }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- ─── TIPOGRAFIA ────────────────────────────────────────────────────── -->
+  <section class="sg-section">
+    <h2 class="sg-section__title">Tipografia</h2>
+
+    <p style="font-family: var(--font-display); font-size: var(--text-hero); font-weight: var(--weight-semi); line-height: 1.1; margin-bottom: var(--sp-6);">
+      Archivo — hero
+    </p>
+    <p style="font-family: var(--font-display); font-size: var(--text-4xl); font-weight: var(--weight-semi); margin-bottom: var(--sp-4);">
+      Archivo — 4xl · título de caso
+    </p>
+    <p style="font-family: var(--font-display); font-size: var(--text-2xl); font-weight: var(--weight-semi); margin-bottom: var(--sp-6);">
+      Archivo — 2xl · subtítulo de seção
+    </p>
+
+    <p style="font-family: var(--font-sans); font-size: var(--text-md); margin-bottom: var(--sp-3); max-width: 60ch;">
+      IBM Plex Sans — corpo. Utilizado em parágrafos, descrições e todo texto explicativo. Favorece leitura em bloco sem competir com elementos mono.
+    </p>
+    <p style="font-family: var(--font-sans); font-size: var(--text-base); color: var(--text-muted); margin-bottom: var(--sp-6); max-width: 60ch;">
+      IBM Plex Sans · text-base · text-muted — texto secundário, legendas, labels de formulário.
+    </p>
+
+    <p style="font-family: var(--font-mono); font-size: var(--text-2xl); font-weight: var(--weight-medium); margin-bottom: var(--sp-2);">
+      +R$ 245 mil
+    </p>
+    <p style="font-family: var(--font-mono); font-size: var(--text-sm); color: var(--text-muted); margin-bottom: var(--sp-3);">
+      IBM Plex Mono — métricas, contadores, status, nomes de tecnologia
+    </p>
+    <p style="font-family: var(--font-mono); font-size: var(--text-xs); color: var(--text-subtle); letter-spacing: 0.1em; margin-bottom: var(--sp-6);">
+      EM PRODUÇÃO · 8 MESES · 7.000 VENDAS
+    </p>
+  </section>
+
+  <!-- ─── STATUS BADGE ──────────────────────────────────────────────────── -->
+  <section class="sg-section">
+    <h2 class="sg-section__title">Status Badge</h2>
+    <div class="sg-row">
+      <span class="status-badge status-badge--on">EM PRODUÇÃO</span>
+      <span class="status-badge status-badge--off">CONCLUÍDO</span>
+    </div>
+  </section>
+
+  <!-- ─── CHIP ──────────────────────────────────────────────────────────── -->
+  <section class="sg-section">
+    <h2 class="sg-section__title">Chip — Stack Label</h2>
+    <div class="chip-list">
+      <span class="chip">Django</span>
+      <span class="chip">DRF</span>
+      <span class="chip">PostgreSQL</span>
+      <span class="chip">Docker</span>
+      <span class="chip">AWS EC2</span>
+      <span class="chip">FastAPI</span>
+      <span class="chip">Playwright</span>
+      <span class="chip">GitHub Actions</span>
+      <span class="chip">pytest</span>
+      <span class="chip">Nginx</span>
+    </div>
+  </section>
+
+  <!-- ─── SECTION HEADER ────────────────────────────────────────────────── -->
+  <section class="sg-section">
+    <h2 class="sg-section__title">Section Header (hairline)</h2>
+    <div class="section-header">
+      <span class="section-header__label">STACK</span>
+    </div>
+    <div class="section-header">
+      <span class="section-header__label">CASOS</span>
+    </div>
+    <div class="section-header">
+      <span class="section-header__label">SOBRE</span>
+    </div>
+  </section>
+
+  <!-- ─── METRIC BLOCK ──────────────────────────────────────────────────── -->
+  <section class="sg-section">
+    <h2 class="sg-section__title">Metric Block</h2>
+    <div class="metric-grid">
+      <div class="metric-block">
+        <span class="metric-block__value">+R$ 245 mil</span>
+        <span class="metric-block__label">volume transacionado pelo sistema</span>
+      </div>
+      <div class="metric-block">
+        <span class="metric-block__value">~7.000</span>
+        <span class="metric-block__label">vendas registradas em ~8 meses</span>
+      </div>
+      <div class="metric-block">
+        <span class="metric-block__value">+4.000</span>
+        <span class="metric-block__label">linhas de testes automatizados</span>
+      </div>
+      <div class="metric-block">
+        <span class="metric-block__value">~1h → 10min</span>
+        <span class="metric-block__label">fechamento de caixa</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── DECISION BLOCK ────────────────────────────────────────────────── -->
+  <section class="sg-section">
+    <h2 class="sg-section__title">Decision Block</h2>
+    <div class="decision-list">
+      <div class="decision-block">
+        <div class="decision-block__header">
+          <span class="decision-block__label">DECISÃO</span>
+          <h3 class="decision-block__title">Multi-tenancy shared-db com tenant_id</h3>
+        </div>
+        <dl class="decision-block__body">
+          <dt>Problema</dt>
+          <dd>Barbearias diferentes precisam de isolamento total de dados — um barbeiro de um salão não pode ver dados de outro.</dd>
+          <dt>Alternativas</dt>
+          <dd>Banco separado por tenant (alto custo); schema separado (complexidade de migrations); shared-db com tenant_id em cada tabela.</dd>
+          <dt>Escolha</dt>
+          <dd>Shared-db com tenant_id resolvido via middleware em cada request. Testes de isolamento retornam 404, não 403 — para não revelar que o recurso existe.</dd>
+          <dt>Resultado</dt>
+          <dd>Isolamento validado por testes. Zero vazamento de dados entre tenants em 8 meses de operação.</dd>
+        </dl>
+      </div>
+
+      <div class="decision-block">
+        <div class="decision-block__header">
+          <span class="decision-block__label">DECISÃO</span>
+          <h3 class="decision-block__title">PostgreSQL real no CI, não SQLite</h3>
+        </div>
+        <dl class="decision-block__body">
+          <dt>Problema</dt>
+          <dd>Testes passando local (SQLite) mas falhando em produção (PostgreSQL) por diferenças de tipos e comportamento de constraints.</dd>
+          <dt>Escolha</dt>
+          <dd>Service container PostgreSQL efêmero no GitHub Actions — mesmo banco da produção, sobe e desce com o job.</dd>
+          <dt>Resultado</dt>
+          <dd>296 testes rodando contra PostgreSQL real a cada push. Nenhum bug só-em-produção após a mudança.</dd>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── INCIDENT BLOCK ────────────────────────────────────────────────── -->
+  <section class="sg-section">
+    <h2 class="sg-section__title">Incident Block <span style="font-size: var(--text-xs); color: var(--text-subtle); font-weight: var(--weight-regular);">(âmbar — máx 5 por tela)</span></h2>
+    <div class="incident-list">
+      <div class="incident-block">
+        <div class="incident-block__header">
+          <span class="incident-block__marker">● INCIDENTE</span>
+          <h3 class="incident-block__title">N+1 na listagem de vendas</h3>
+        </div>
+        <dl class="incident-block__body">
+          <dt>Sintoma</dt>
+          <dd>Listagem de 20 vendas demorando visivelmente. Reclamação do cliente após semanas em produção.</dd>
+          <dt>Investigação</dt>
+          <dd>Django Debug Toolbar mostrou 61 queries para renderizar 20 registros: 1 geral + 20 para o barbeiro + 20 para o serviço + 20 para o pagamento.</dd>
+          <dt>Causa</dt>
+          <dd>Relações FK não carregadas previamente — ORM emitia uma query por objeto ao acessar cada FK no template.</dd>
+          <dt>Correção</dt>
+          <dd><code>select_related("barbeiro", "servico")</code> + <code>prefetch_related("pagamento")</code> na queryset da view. 61 queries → 3 queries.</dd>
+        </dl>
+      </div>
+
+      <div class="incident-block">
+        <div class="incident-block__header">
+          <span class="incident-block__marker">● INCIDENTE</span>
+          <h3 class="incident-block__title">networkidle nunca resolvia no EC2</h3>
+        </div>
+        <dl class="incident-block__body">
+          <dt>Sintoma</dt>
+          <dd>Playwright aguardando <code>networkidle</code> e timeout esgotado em 100% das requests — mesmo para páginas que carregavam visualmente.</dd>
+          <dt>Causa</dt>
+          <dd>Scripts de analytics/telemetria do portal mantêm conexões de rede abertas indefinidamente. <code>networkidle</code> nunca é atingido.</dd>
+          <dt>Correção</dt>
+          <dd>Substituído por <code>page.wait_for_selector()</code> num elemento específico da página. Confiável e determinístico.</dd>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── CASE CARD ─────────────────────────────────────────────────────── -->
+  <section class="sg-section">
+    <h2 class="sg-section__title">Case Card</h2>
+    <div class="cases-grid">
+      <article class="case-card">
+        <div class="case-card__top">
+          <span class="status-badge status-badge--on">EM PRODUÇÃO</span>
+        </div>
+        <h2 class="case-card__name">Barber Cashflow</h2>
+        <p class="case-card__tagline">SaaS multi-tenant que leva agendamento, venda, comissão, estoque e caixa de uma barbearia real à produção.</p>
+        <p class="case-card__metric">+R$ 245 mil transacionados</p>
+        <p class="case-card__problem">N+1 na listagem de vendas: 20 vendas geravam ~61 queries — corrigido com select_related + prefetch_related.</p>
+        <div class="chip-list">
+          <span class="chip">Django</span>
+          <span class="chip">DRF</span>
+          <span class="chip">PostgreSQL</span>
+          <span class="chip">Docker</span>
+          <span class="chip">PWA</span>
+        </div>
+        <a href="/casos/barber-cashflow.html" class="case-card__link">Ver o caso completo →</a>
+      </article>
+
+      <article class="case-card">
+        <div class="case-card__top">
+          <span class="status-badge status-badge--on">EM PRODUÇÃO</span>
+        </div>
+        <h2 class="case-card__name">Gestão de Açaí</h2>
+        <p class="case-card__tagline">Gestão operacional e financeira em uso diário por funcionários de um estabelecimento real da família.</p>
+        <p class="case-card__metric">Fechamento de caixa: ~1h → ~10min</p>
+        <p class="case-card__problem">Deploy direto sem testes: montei CI/CD com gate de 80% e backup diário para Google Drive.</p>
+        <div class="chip-list">
+          <span class="chip">Django</span>
+          <span class="chip">PostgreSQL</span>
+          <span class="chip">GitHub Actions</span>
+          <span class="chip">pytest</span>
+        </div>
+        <a href="/casos/gestao-acai.html" class="case-card__link">Ver o caso completo →</a>
+      </article>
+
+      <article class="case-card">
+        <div class="case-card__top">
+          <span class="status-badge status-badge--on">EM PRODUÇÃO</span>
+        </div>
+        <h2 class="case-card__name">Nícia Track</h2>
+        <p class="case-card__tagline">Plataforma de estudos construída do domínio à infraestrutura AWS — do DNS ao banco.</p>
+        <p class="case-card__metric">800 questões / 13 disciplinas</p>
+        <p class="case-card__problem">Media perdida a cada redeploy no PaaS gratuito — migrei para AWS com S3 + django-storages.</p>
+        <div class="chip-list">
+          <span class="chip">Django</span>
+          <span class="chip">AWS</span>
+          <span class="chip">Docker</span>
+          <span class="chip">Nginx</span>
+        </div>
+        <a href="/casos/nicia-track.html" class="case-card__link">Ver o caso completo →</a>
+      </article>
+
+      <article class="case-card">
+        <div class="case-card__top">
+          <span class="status-badge status-badge--off">CONCLUÍDO</span>
+        </div>
+        <h2 class="case-card__name">Automação e Web Scraping</h2>
+        <p class="case-card__tagline">Serviço de automação (desafio técnico) que consulta portal público e devolve dados estruturados via API.</p>
+        <p class="case-card__metric">6 incidentes de produção resolvidos</p>
+        <p class="case-card__problem">networkidle nunca resolvia — scripts de analytics mantêm conexões abertas indefinidamente.</p>
+        <div class="chip-list">
+          <span class="chip">FastAPI</span>
+          <span class="chip">Playwright</span>
+          <span class="chip">Docker</span>
+          <span class="chip">AWS EC2</span>
+        </div>
+        <a href="/casos/automacao-scraping.html" class="case-card__link">Ver o caso completo →</a>
+      </article>
+    </div>
+  </section>
+
+  <!-- ─── FOCO DE TECLADO ───────────────────────────────────────────────── -->
+  <section class="sg-section">
+    <h2 class="sg-section__title">Foco de teclado (Tab para testar)</h2>
+    <div class="sg-row" style="align-items: center;">
+      <a href="#" class="case-card__link">Link com foco visível →</a>
+      <span class="chip" tabindex="0">Chip focável</span>
+      <span class="status-badge status-badge--on" tabindex="0">EM PRODUÇÃO</span>
+    </div>
+  </section>
+
+</div>
+{% endblock %}

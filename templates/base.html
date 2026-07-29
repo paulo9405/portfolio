@@ -1,42 +1,70 @@
 <!DOCTYPE html>
-<html lang="{{ lang }}">
+<html lang="{{ lang_code }}">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>{{ meta.title }}</title>
   <meta name="description" content="{{ meta.description }}">
 
-  <!-- hreflang -->
-  <link rel="alternate" hreflang="pt-BR" href="https://portfolio.paulodev.net/">
-  <link rel="alternate" hreflang="en" href="https://portfolio.paulodev.net/en/">
-  <link rel="alternate" hreflang="x-default" href="https://portfolio.paulodev.net/">
+  {% if is_styleguide | default(false) %}
+  <meta name="robots" content="noindex, nofollow">
+  {% endif %}
 
-  <link rel="stylesheet" href="{{ assets_root }}assets/css/main.css">
+  <!-- Canonical + hreflang -->
+  <link rel="canonical" href="{{ canonical_url }}">
+  <link rel="alternate" hreflang="pt-BR" href="{{ hreflang_pt }}">
+  <link rel="alternate" hreflang="en"    href="{{ hreflang_en }}">
+  <link rel="alternate" hreflang="x-default" href="{{ hreflang_pt }}">
+
+  <!-- Open Graph -->
+  <meta property="og:type"        content="website">
+  <meta property="og:url"         content="{{ canonical_url }}">
+  <meta property="og:title"       content="{{ meta.title }}">
+  <meta property="og:description" content="{{ meta.description }}">
+  {% if og_image | default('') %}
+  <meta property="og:image"       content="{{ og_image }}">
+  {% endif %}
+
+  <!-- Fonts — preconnect first, then stylesheet -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=IBM+Plex+Sans:wght@400;500&amp;display=swap">
+
+  <link rel="stylesheet" href="/assets/css/main.css">
 </head>
 <body>
   <header class="site-header">
     <nav class="nav" aria-label="Navegação principal">
       <a href="{{ root_url }}" class="nav__brand">Paulo Souza</a>
-      <div class="nav__lang">
+
+      <div class="nav__lang" aria-label="Seletor de idioma">
         {% if lang == "pt" %}
-          <span class="nav__lang-current">PT</span>
-          <span class="nav__lang-sep">|</span>
-          <a href="{{ en_url }}" class="nav__lang-link">EN</a>
+          <span class="nav__lang-current" aria-current="true">PT</span>
+          <span class="nav__lang-sep" aria-hidden="true">|</span>
+          <a href="{{ hreflang_en }}" class="nav__lang-link" hreflang="en" lang="en">EN</a>
         {% else %}
-          <a href="{{ pt_url }}" class="nav__lang-link">PT</a>
-          <span class="nav__lang-sep">|</span>
-          <span class="nav__lang-current">EN</span>
+          <a href="{{ hreflang_pt }}" class="nav__lang-link" hreflang="pt-BR" lang="pt-BR">PT</a>
+          <span class="nav__lang-sep" aria-hidden="true">|</span>
+          <span class="nav__lang-current" aria-current="true">EN</span>
         {% endif %}
       </div>
     </nav>
   </header>
 
-  <main>
+  <main id="main-content">
     {% block content %}{% endblock %}
   </main>
 
   <footer class="site-footer">
-    <p class="site-footer__text">Paulo Souza · {{ "Buritizeiro — MG" if lang == "pt" else "Buritizeiro — MG, Brazil" }}</p>
+    <div class="site-footer__inner">
+      <p class="site-footer__text">
+        Paulo Souza · {{ "Buritizeiro — MG" if lang == "pt" else "Buritizeiro — MG, Brazil" }}
+      </p>
+    </div>
   </footer>
+
+  <script src="/assets/js/main.js" defer></script>
 </body>
 </html>

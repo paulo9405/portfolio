@@ -4,7 +4,10 @@ build.py — gera dist/ a partir de templates/ + data/content.json
 Uso:
     python build.py
 
-Saída: dist/ (PT) e dist/en/ (EN)
+Saída:
+    dist/index.html          (PT)
+    dist/en/index.html       (EN)
+    dist/styleguide.html     (fora do sitemap — noindex)
 """
 
 import json
@@ -18,6 +21,8 @@ DATA_FILE = ROOT / "data" / "content.json"
 TEMPLATES_DIR = ROOT / "templates"
 ASSETS_SRC = ROOT / "assets"
 DIST = ROOT / "dist"
+
+BASE_URL = "https://portfolio.paulodev.net"
 
 
 def load_content() -> dict:
@@ -36,20 +41,44 @@ def build_lang(env: Environment, content: dict, lang: str):
     data = content[lang]
     is_en = lang == "en"
     out_dir = DIST / "en" if is_en else DIST
-
     out_dir.mkdir(parents=True, exist_ok=True)
+
+    canonical = f"{BASE_URL}/en/" if is_en else f"{BASE_URL}/"
 
     ctx = {
         "lang": lang,
+        "lang_code": "en" if is_en else "pt-BR",
         "meta": data["meta"],
+        "canonical_url": canonical,
+        "hreflang_pt": f"{BASE_URL}/",
+        "hreflang_en": f"{BASE_URL}/en/",
         "root_url": "/en/" if is_en else "/",
-        "assets_root": "../../" if is_en else "",
         "pt_url": "/",
         "en_url": "/en/",
     }
 
     tmpl = env.get_template("index.html")
     (out_dir / "index.html").write_text(tmpl.render(**ctx), encoding="utf-8")
+
+
+def build_styleguide(env: Environment):
+    ctx = {
+        "lang": "pt",
+        "lang_code": "pt-BR",
+        "meta": {
+            "title": "Styleguide — Paulo Souza Portfolio",
+            "description": "Componentes do design system. Não indexado.",
+        },
+        "canonical_url": f"{BASE_URL}/styleguide.html",
+        "hreflang_pt": f"{BASE_URL}/styleguide.html",
+        "hreflang_en": f"{BASE_URL}/styleguide.html",
+        "root_url": "/",
+        "pt_url": "/",
+        "en_url": "/en/",
+        "is_styleguide": True,
+    }
+    tmpl = env.get_template("styleguide.html")
+    (DIST / "styleguide.html").write_text(tmpl.render(**ctx), encoding="utf-8")
 
 
 def main():
@@ -63,8 +92,10 @@ def main():
     copy_assets()
     build_lang(env, content, "pt")
     build_lang(env, content, "en")
+    build_styleguide(env)
 
-    print(f"Build concluído → {DIST}")
+    pages = list(DIST.rglob("*.html"))
+    print(f"Build concluído → {DIST} ({len(pages)} páginas)")
 
 
 if __name__ == "__main__":
