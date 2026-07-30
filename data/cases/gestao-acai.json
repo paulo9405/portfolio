@@ -48,7 +48,8 @@
     "architecture": {
       "heading": "Arquitetura",
       "description": "Django com CBVs e arquitetura em camadas (View → Service → Selector → Model); PostgreSQL no Neon (serverless, sem servidor para gerenciar); hospedagem no Render; GitHub Actions orquestrando lint, testes e deploy; backup diário via workflow agendado no GitHub Actions — pg_dump do endpoint direto do Neon → gzip → rclone → Google Drive → rotação dos 15 mais recentes. Nenhum artefato persiste no runner.",
-      "diagram_note": "Diagrama do pipeline CI/CD — Fase 5"
+      "diagram_note": "Pipeline CI/CD e backup diário automatizado",
+      "svg_path": "/assets/img/acai/diagram.svg"
     },
     "decisions": [
       {
@@ -268,7 +269,8 @@
     "architecture": {
       "heading": "Architecture",
       "description": "Django with CBVs and a layered architecture (View → Service → Selector → Model); PostgreSQL on Neon (serverless, no server to manage); hosted on Render; GitHub Actions orchestrating lint, tests and deployment; daily backup via scheduled GitHub Actions workflow — pg_dump from Neon's direct endpoint → gzip → rclone → Google Drive → rotation of the 15 most recent files. No artefacts persist on the ephemeral runner.",
-      "diagram_note": "CI/CD pipeline diagram — Phase 5"
+      "diagram_note": "CI/CD pipeline and automated daily backup",
+      "svg_path": "/assets/img/acai/diagram.svg"
     },
     "decisions": [
       {

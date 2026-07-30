@@ -90,7 +90,13 @@
     <div class="section-header">
       <span class="section-header__label">{{ case.architecture.heading | upper }}</span>
     </div>
-    {% if case.architecture.diagram_note | default('') %}
+    {% if case.architecture.svg_path | default('') %}
+    <img src="{{ case.architecture.svg_path }}"
+         alt="{{ case.architecture.diagram_note | default('Diagrama de arquitetura') }}"
+         class="case-diagram"
+         loading="lazy"
+         width="880" height="280">
+    {% elif case.architecture.diagram_note | default('') %}
     <div class="case-diagram-placeholder" role="img" aria-label="{{ case.architecture.diagram_note }}">
       <span class="case-diagram-placeholder__label">{{ case.architecture.diagram_note }}</span>
     </div>

@@ -55,7 +55,8 @@
     "architecture": {
       "heading": "Arquitetura",
       "description": "Django + DRF servindo a API REST com autenticação JWT; PostgreSQL como banco compartilhado entre tenants; isolamento por tenant_id resolvido via TenantMiddleware a cada request; Nginx como reverse proxy; Docker para build reproduzível; Cloudflare para SSL e CDN. A camada RAG corre separada: dados do sistema são chunked, convertidos em embeddings com a API da OpenAI (text-embedding-3-small) e indexados com FAISS. PWA com service worker para uso offline parcial.",
-      "diagram_note": "Diagrama de arquitetura — Fase 5"
+      "diagram_note": "Isolamento multi-tenant: requisição → middleware → filtro por tenant → PostgreSQL",
+      "svg_path": "/assets/img/barber/diagram.svg"
     },
     "decisions": [
       {
@@ -258,7 +259,8 @@
     "architecture": {
       "heading": "Architecture",
       "description": "Django + DRF serving the REST API with JWT authentication; PostgreSQL as the shared tenant database; tenant isolation by tenant_id resolved via TenantMiddleware on each request; Nginx as reverse proxy; Docker for reproducible builds; Cloudflare for SSL and CDN. The RAG layer runs separately: system data is chunked, converted to embeddings via the OpenAI API (text-embedding-3-small) and indexed with FAISS. PWA with service worker for partial offline use.",
-      "diagram_note": "Architecture diagram — Phase 5"
+      "diagram_note": "Multi-tenant isolation: request → middleware → tenant filter → PostgreSQL",
+      "svg_path": "/assets/img/barber/diagram.svg"
     },
     "decisions": [
       {

@@ -1,0 +1,89 @@
+<svg viewBox="0 0 860 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diagrama de isolamento multi-tenant: requisição → middleware → filtro por tenant → PostgreSQL">
+  <defs>
+    <marker id="ar" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0,8 3,0 6" fill="#3a3f4d"/>
+    </marker>
+    <style>
+      text { font-family: 'Courier New', Courier, monospace; }
+    </style>
+  </defs>
+
+  <!-- BG -->
+  <rect width="860" height="260" fill="#0b0c0e"/>
+
+  <!-- ── TENANT A ─────────────────────────────────────────────── -->
+  <rect x="12" y="28" width="135" height="58" rx="5" fill="#141519" stroke="#22252d" stroke-width="1"/>
+  <text x="79" y="52" text-anchor="middle" font-size="11" fill="#e8eaf0">BARBEARIA A</text>
+  <text x="79" y="68" text-anchor="middle" font-size="8" fill="#8892a4">a.barbercashflow.com</text>
+  <text x="79" y="80" text-anchor="middle" font-size="8" fill="#4f8ef7">request GET /dashboard</text>
+
+  <!-- ── TENANT B ─────────────────────────────────────────────── -->
+  <rect x="12" y="178" width="135" height="58" rx="5" fill="#141519" stroke="#22252d" stroke-width="1"/>
+  <text x="79" y="202" text-anchor="middle" font-size="11" fill="#e8eaf0">BARBEARIA B</text>
+  <text x="79" y="218" text-anchor="middle" font-size="8" fill="#8892a4">b.barbercashflow.com</text>
+  <text x="79" y="230" text-anchor="middle" font-size="8" fill="#4f8ef7">request GET /dashboard</text>
+
+  <!-- lines converging to middleware -->
+  <line x1="147" y1="57" x2="228" y2="125" stroke="#3a3f4d" stroke-width="1.5" marker-end="url(#ar)"/>
+  <line x1="147" y1="207" x2="228" y2="139" stroke="#3a3f4d" stroke-width="1.5" marker-end="url(#ar)"/>
+
+  <!-- ── TENANT MIDDLEWARE ───────────────────────────────────── -->
+  <rect x="230" y="88" width="158" height="90" rx="5" fill="#141519" stroke="#22252d" stroke-width="1"/>
+  <text x="309" y="112" text-anchor="middle" font-size="10" fill="#e8eaf0">TENANT</text>
+  <text x="309" y="127" text-anchor="middle" font-size="10" fill="#e8eaf0">MIDDLEWARE</text>
+  <line x1="244" y1="135" x2="374" y2="135" stroke="#22252d" stroke-width="0.5"/>
+  <text x="309" y="152" text-anchor="middle" font-size="9" fill="#4f8ef7">request.tenant</text>
+  <text x="309" y="166" text-anchor="middle" font-size="8" fill="#8892a4">identifica pelo subdomínio</text>
+
+  <!-- arrow middleware → app layer -->
+  <line x1="388" y1="133" x2="418" y2="133" stroke="#3a3f4d" stroke-width="1.5" marker-end="url(#ar)"/>
+
+  <!-- ── APP LAYER ──────────────────────────────────────────── -->
+  <rect x="420" y="60" width="198" height="148" rx="5" fill="#141519" stroke="#22252d" stroke-width="1"/>
+  <text x="519" y="84" text-anchor="middle" font-size="10" fill="#8892a4">VIEW</text>
+  <line x1="434" y1="90" x2="604" y2="90" stroke="#22252d" stroke-width="0.5"/>
+  <text x="519" y="110" text-anchor="middle" font-size="10" fill="#8892a4">SERVICE</text>
+  <line x1="434" y1="116" x2="604" y2="116" stroke="#22252d" stroke-width="0.5"/>
+  <text x="519" y="136" text-anchor="middle" font-size="10" fill="#8892a4">SELECTOR</text>
+  <line x1="434" y1="148" x2="604" y2="148" stroke="#22252d" stroke-width="1"/>
+  <text x="519" y="166" text-anchor="middle" font-size="9" fill="#4f8ef7">WHERE tenant_id = ?</text>
+  <text x="519" y="181" text-anchor="middle" font-size="8" fill="#8892a4">filtro automático em todas as queries</text>
+  <text x="519" y="196" text-anchor="middle" font-size="8" fill="#8892a4">via BaseSelector</text>
+
+  <!-- arrow app → db -->
+  <line x1="618" y1="133" x2="648" y2="133" stroke="#3a3f4d" stroke-width="1.5" marker-end="url(#ar)"/>
+
+  <!-- ── POSTGRESQL ──────────────────────────────────────────── -->
+  <rect x="650" y="28" width="196" height="208" rx="5" fill="#141519" stroke="#22252d" stroke-width="1"/>
+  <text x="748" y="52" text-anchor="middle" font-size="10" fill="#8892a4">PostgreSQL</text>
+  <line x1="664" y1="60" x2="832" y2="60" stroke="#22252d" stroke-width="0.5"/>
+
+  <!-- tenant A band (highlighted — active) -->
+  <rect x="664" y="67" width="168" height="46" rx="3" fill="#15192b" stroke="#2a3a5c" stroke-width="1"/>
+  <text x="748" y="87" text-anchor="middle" font-size="10" fill="#4f8ef7">tenant A</text>
+  <text x="748" y="103" text-anchor="middle" font-size="8" fill="#8892a4">vendas · agenda · caixa · clientes</text>
+  <!-- active indicator -->
+  <circle cx="671" cy="87" r="4" fill="#22c55e"/>
+  <text x="678" y="90" font-size="7" fill="#22c55e">visível</text>
+
+  <!-- tenant B band (dimmed) -->
+  <rect x="664" y="121" width="168" height="46" rx="3" fill="#0f1014" stroke="#1a1d26" stroke-width="1"/>
+  <text x="748" y="141" text-anchor="middle" font-size="10" fill="#2e3545">tenant B</text>
+  <text x="748" y="157" text-anchor="middle" font-size="8" fill="#1e2432">vendas · agenda · caixa · clientes</text>
+  <!-- blocked indicator -->
+  <circle cx="671" cy="141" r="4" fill="#2a1a1a"/>
+  <text x="678" y="144" font-size="7" fill="#3a2020">bloqueado</text>
+
+  <!-- tenant C band (dimmed) -->
+  <rect x="664" y="175" width="168" height="46" rx="3" fill="#0f1014" stroke="#1a1d26" stroke-width="1"/>
+  <text x="748" y="195" text-anchor="middle" font-size="10" fill="#2e3545">tenant C</text>
+  <text x="748" y="211" text-anchor="middle" font-size="8" fill="#1e2432">vendas · agenda · caixa · clientes</text>
+  <circle cx="671" cy="195" r="4" fill="#2a1a1a"/>
+  <text x="678" y="198" font-size="7" fill="#3a2020">bloqueado</text>
+
+  <!-- row-level label -->
+  <text x="748" y="232" text-anchor="middle" font-size="8" fill="#3a3f4d">isolamento por linha · mesmo schema</text>
+
+  <!-- footer -->
+  <text x="430" y="252" text-anchor="middle" font-size="8" fill="#22252d">BARBER CASHFLOW · isolamento multi-tenant</text>
+</svg>

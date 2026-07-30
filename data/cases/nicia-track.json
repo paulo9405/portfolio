@@ -43,7 +43,8 @@
     "architecture": {
       "heading": "Arquitetura",
       "description": "Cloudflare gerencia DNS e termina TLS. EC2 roda um container Docker com Nginx (proxy reverso) na frente de Gunicorn servindo o Django. Banco de dados no RDS PostgreSQL (VPC separada, sem IP público). Arquivos de mídia no S3 via django-storages. IAM com política de mínimo privilégio para o bucket. Security Group do RDS aceita conexão apenas do Security Group da EC2 — sem acesso à internet. Settings separados por ambiente via variável de ambiente DJANGO_SETTINGS_MODULE. A decisão de separar migrations do CMD do Docker foi tomada após o primeiro incidente em produção.",
-      "diagram_note": "Diagrama 'Do DNS ao banco' — Fase 5"
+      "diagram_note": "Do DNS ao banco: Cloudflare → Nginx → Gunicorn → Django → RDS / S3",
+      "svg_path": "/assets/img/nicia/diagram.svg"
     },
     "decisions": [
       {
@@ -258,7 +259,8 @@
     "architecture": {
       "heading": "Architecture",
       "description": "Cloudflare manages DNS and terminates TLS. EC2 runs a Docker container with Nginx (reverse proxy) in front of Gunicorn serving Django. Database on RDS PostgreSQL (separate VPC, no public IP). Media files on S3 via django-storages. IAM with least-privilege policy for the bucket. RDS Security Group accepts connections only from the EC2 Security Group — no internet access. Environment-specific settings via DJANGO_SETTINGS_MODULE environment variable. The decision to separate migrations from the Docker CMD was made after the first production incident.",
-      "diagram_note": "'From DNS to database' diagram — Phase 5"
+      "diagram_note": "From DNS to database: Cloudflare → Nginx → Gunicorn → Django → RDS / S3",
+      "svg_path": "/assets/img/nicia/diagram.svg"
     },
     "decisions": [
       {

@@ -932,6 +932,16 @@ p + p { margin-top: var(--sp-4); }
   max-width: 68ch;
 }
 
+/* Diagrama SVG */
+.case-diagram {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-md);
+  margin-bottom: var(--sp-6);
+  border: 1px solid var(--border);
+}
+
 /* Placeholder do diagrama (Fase 5) */
 .case-diagram-placeholder {
   display: flex;

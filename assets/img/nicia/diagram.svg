@@ -1,0 +1,89 @@
+<svg viewBox="0 0 880 270" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Arquitetura Nícia Track: do DNS ao banco — Cloudflare, Nginx, Gunicorn, Django, RDS e S3">
+  <defs>
+    <marker id="ar" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0,8 3,0 6" fill="#3a3f4d"/>
+    </marker>
+    <style>
+      text { font-family: 'Courier New', Courier, monospace; }
+    </style>
+  </defs>
+
+  <!-- BG -->
+  <rect width="880" height="270" fill="#0b0c0e"/>
+
+  <!-- ── USUÁRIO ────────────────────────────────────────────────── -->
+  <rect x="12" y="98" width="80" height="64" rx="5" fill="#141519" stroke="#22252d" stroke-width="1"/>
+  <text x="52" y="122" text-anchor="middle" font-size="10" fill="#e8eaf0">USUÁRIO</text>
+  <text x="52" y="138" text-anchor="middle" font-size="8" fill="#8892a4">browser</text>
+  <text x="52" y="154" text-anchor="middle" font-size="8" fill="#4f8ef7">HTTPS</text>
+
+  <line x1="92" y1="130" x2="126" y2="130" stroke="#3a3f4d" stroke-width="1.5" marker-end="url(#ar)"/>
+
+  <!-- ── CLOUDFLARE ──────────────────────────────────────────────── -->
+  <rect x="130" y="70" width="132" height="124" rx="5" fill="#141519" stroke="#22252d" stroke-width="1"/>
+  <text x="196" y="95" text-anchor="middle" font-size="11" fill="#e8eaf0">CLOUDFLARE</text>
+  <line x1="144" y1="103" x2="248" y2="103" stroke="#22252d" stroke-width="0.5"/>
+  <text x="196" y="121" text-anchor="middle" font-size="9" fill="#8892a4">DNS anycast</text>
+  <text x="196" y="137" text-anchor="middle" font-size="9" fill="#8892a4">TLS termination</text>
+  <text x="196" y="153" text-anchor="middle" font-size="9" fill="#4f8ef7">HTTPS :443</text>
+  <text x="196" y="170" text-anchor="middle" font-size="8" fill="#8892a4">→ HTTP para EC2</text>
+  <text x="196" y="184" text-anchor="middle" font-size="8" fill="#3a3f4d">:80 interno</text>
+
+  <!-- CF → EC2 -->
+  <line x1="262" y1="130" x2="296" y2="130" stroke="#3a3f4d" stroke-width="1.5" marker-end="url(#ar)"/>
+  <text x="279" y="122" text-anchor="middle" font-size="8" fill="#8892a4">HTTP</text>
+
+  <!-- ── EC2 DASHED CONTAINER ───────────────────────────────────── -->
+  <rect x="300" y="36" width="280" height="202" rx="5" fill="none" stroke="#22252d" stroke-width="1" stroke-dasharray="5,3"/>
+  <text x="440" y="54" text-anchor="middle" font-size="8" fill="#3a3f4d">Docker · EC2 us-east-2</text>
+
+  <!-- inner Docker box -->
+  <rect x="310" y="60" width="260" height="170" rx="4" fill="#0f1015" stroke="#1e2230" stroke-width="1"/>
+
+  <!-- NGINX -->
+  <rect x="320" y="70" width="240" height="42" rx="4" fill="#15192b" stroke="#2a3a5c" stroke-width="1"/>
+  <text x="440" y="88" text-anchor="middle" font-size="11" fill="#4f8ef7">NGINX</text>
+  <text x="440" y="103" text-anchor="middle" font-size="8" fill="#8892a4">reverse proxy · :80 → :8000 · proxy_read_timeout 300s</text>
+
+  <line x1="440" y1="112" x2="440" y2="127" stroke="#3a3f4d" stroke-width="1.5" marker-end="url(#ar)"/>
+
+  <!-- GUNICORN -->
+  <rect x="320" y="129" width="240" height="42" rx="4" fill="#141519" stroke="#22252d" stroke-width="1"/>
+  <text x="440" y="147" text-anchor="middle" font-size="11" fill="#e8eaf0">GUNICORN</text>
+  <text x="440" y="162" text-anchor="middle" font-size="8" fill="#8892a4">WSGI server · workers</text>
+
+  <line x1="440" y1="171" x2="440" y2="186" stroke="#3a3f4d" stroke-width="1.5" marker-end="url(#ar)"/>
+
+  <!-- DJANGO -->
+  <rect x="320" y="188" width="240" height="34" rx="4" fill="#141519" stroke="#22252d" stroke-width="1"/>
+  <text x="440" y="208" text-anchor="middle" font-size="11" fill="#e8eaf0">DJANGO</text>
+  <text x="440" y="218" text-anchor="middle" font-size="8" fill="#8892a4">View → Service → Selector → Model</text>
+
+  <!-- EC2 → RDS (from Django area, going right-up) -->
+  <line x1="580" y1="178" x2="628" y2="110" stroke="#3a3f4d" stroke-width="1.5" marker-end="url(#ar)"/>
+  <text x="598" y="140" text-anchor="middle" font-size="8" fill="#8892a4">psql:5432</text>
+  <text x="598" y="152" text-anchor="middle" font-size="8" fill="#4f8ef7">sslmode=require</text>
+
+  <!-- EC2 → S3 (from Django area, going right-down) -->
+  <line x1="580" y1="210" x2="628" y2="226" stroke="#3a3f4d" stroke-width="1.5" marker-end="url(#ar)"/>
+  <text x="600" y="222" text-anchor="middle" font-size="8" fill="#8892a4">django-storages</text>
+
+  <!-- ── RDS ─────────────────────────────────────────────────────── -->
+  <rect x="632" y="58" width="152" height="108" rx="5" fill="#141519" stroke="#22252d" stroke-width="1"/>
+  <text x="708" y="82" text-anchor="middle" font-size="11" fill="#e8eaf0">RDS</text>
+  <line x1="646" y1="90" x2="770" y2="90" stroke="#22252d" stroke-width="0.5"/>
+  <text x="708" y="108" text-anchor="middle" font-size="9" fill="#8892a4">PostgreSQL</text>
+  <text x="708" y="124" text-anchor="middle" font-size="8" fill="#8892a4">VPC · sem IP público</text>
+  <text x="708" y="140" text-anchor="middle" font-size="8" fill="#4f8ef7">SG: aceita só EC2 SG</text>
+  <text x="708" y="156" text-anchor="middle" font-size="8" fill="#8892a4">backups gerenciados</text>
+
+  <!-- ── S3 ──────────────────────────────────────────────────────── -->
+  <rect x="632" y="180" width="152" height="72" rx="5" fill="#141519" stroke="#22252d" stroke-width="1"/>
+  <text x="708" y="203" text-anchor="middle" font-size="11" fill="#e8eaf0">S3</text>
+  <line x1="646" y1="210" x2="770" y2="210" stroke="#22252d" stroke-width="0.5"/>
+  <text x="708" y="227" text-anchor="middle" font-size="9" fill="#8892a4">media files</text>
+  <text x="708" y="242" text-anchor="middle" font-size="8" fill="#8892a4">IAM mínimo privilégio</text>
+
+  <!-- footer -->
+  <text x="440" y="258" text-anchor="middle" font-size="8" fill="#22252d">NÍCIA TRACK · do DNS ao banco</text>
+</svg>
