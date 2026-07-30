@@ -209,6 +209,16 @@
         "~296 testes automatizados rodando contra PostgreSQL real a cada push, com gate de cobertura de 80%. Backup diário automatizado, validado em produção desde 17/07/2026, com rotação de 15 arquivos no Google Drive. Nenhum deploy com CI vermelho desde a implementação do pipeline."
       ]
     },
+    "screenshots": [
+      { "file": "/assets/img/acai/01-fechamento.webp",   "alt": "Tela de fechamento de caixa diário" },
+      { "file": "/assets/img/acai/02-pedidos-dia.webp",  "alt": "Painel de pedidos do dia" },
+      { "file": "/assets/img/acai/03-relatorio-1.webp",  "alt": "Relatório de vendas — parte 1" },
+      { "file": "/assets/img/acai/04-relatorio-2.webp",  "alt": "Relatório de vendas — parte 2" },
+      { "file": "/assets/img/acai/05-relatorio-3.webp",  "alt": "Relatório de vendas — parte 3" },
+      { "file": "/assets/img/acai/06-dashboard.webp",    "alt": "Dashboard financeiro" },
+      { "file": "/assets/img/acai/07-ci-pipeline.webp",  "alt": "Pipeline CI/CD com jobs de lint, testes e coverage" },
+      { "file": "/assets/img/acai/08-backup-drive.webp", "alt": "Pasta no Google Drive com backups datados e rotação automática" }
+    ],
     "learning": {
       "heading": "Aprendizado",
       "text": "Ter testes sem trava de deploy é ter uma rede de segurança com buracos. O CI/CD não é complexidade extra — é o que transforma testes em garantia real. E backup sem validação do upload não é backup: é um ritual que dá sensação de segurança sem a segurança de fato."
@@ -430,6 +440,16 @@
         "~296 automated tests running against real PostgreSQL on every push, with an 80% coverage gate. Automated daily backup validated in production since 17/07/2026, with rotation of 15 files on Google Drive. No deployment with a red CI since the pipeline was implemented."
       ]
     },
+    "screenshots": [
+      { "file": "/assets/img/acai/01-fechamento.webp",   "alt": "Daily cash closing screen" },
+      { "file": "/assets/img/acai/02-pedidos-dia.webp",  "alt": "Daily orders panel" },
+      { "file": "/assets/img/acai/03-relatorio-1.webp",  "alt": "Sales report — part 1" },
+      { "file": "/assets/img/acai/04-relatorio-2.webp",  "alt": "Sales report — part 2" },
+      { "file": "/assets/img/acai/05-relatorio-3.webp",  "alt": "Sales report — part 3" },
+      { "file": "/assets/img/acai/06-dashboard.webp",    "alt": "Financial dashboard" },
+      { "file": "/assets/img/acai/07-ci-pipeline.webp",  "alt": "CI/CD pipeline with lint, tests and coverage jobs" },
+      { "file": "/assets/img/acai/08-backup-drive.webp", "alt": "Google Drive folder with dated backups and automatic rotation" }
+    ],
     "learning": {
       "heading": "Learning",
       "text": "Having tests without a deployment gate means having a safety net with holes. CI/CD is not added complexity — it is what turns tests into a real guarantee. And a backup without upload validation is not a backup: it is a ritual that gives a sense of security without the security itself."

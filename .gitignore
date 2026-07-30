@@ -9,6 +9,10 @@ env/
 # Build output — publicado pelo Cloudflare, nunca commitar manualmente
 dist/
 
+# Documentação interna e prints brutos — não publicar
+docs/
+prints/
+
 # OS
 .DS_Store
 Thumbs.db

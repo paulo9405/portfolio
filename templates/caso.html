@@ -171,7 +171,29 @@
   </div>
 </section>
 
-{# ── 9. APRENDIZADO ────────────────────────────────────────────────────── #}
+{# ── 9. CAPTURAS ───────────────────────────────────────────────────────── #}
+{% if case.screenshots | default([]) %}
+<section class="case-section section" id="capturas">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-header__label">
+        {% if lang == "pt" %}CAPTURAS{% else %}SCREENSHOTS{% endif %}
+      </span>
+    </div>
+    <div class="case-gallery">
+      {% for shot in case.screenshots %}
+      <img src="{{ shot.file }}"
+           alt="{{ shot.alt }}"
+           class="case-gallery__img"
+           loading="lazy"
+           decoding="async">
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{# ── 10. APRENDIZADO ───────────────────────────────────────────────────── #}
 <section class="case-section section" id="aprendizado">
   <div class="container">
     <div class="section-header">

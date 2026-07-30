@@ -192,6 +192,13 @@
         "Zero vazamento de dados entre tenants em 8 meses de operação. Suíte de +4.000 linhas de testes automatizados cobrindo isolamento multi-tenant, atomicidade de operações financeiras, soft delete e a interface RAG."
       ]
     },
+    "screenshots": [
+      { "file": "/assets/img/barber/01-dashboard.webp",   "alt": "Dashboard financeiro com lucro líquido e conciliação por forma de pagamento" },
+      { "file": "/assets/img/barber/02-tela-vendas.webp", "alt": "Tela de vendas com registro de comissionamento por barbeiro" },
+      { "file": "/assets/img/barber/03-agendamentos.webp","alt": "Grade de disponibilidade e calendário de agendamentos" },
+      { "file": "/assets/img/barber/04-chat-ia.webp",     "alt": "Assistente de IA respondendo perguntas sobre o negócio" },
+      { "file": "/assets/img/barber/05-pwa.webp",         "alt": "PWA instalado no celular" }
+    ],
     "learning": {
       "heading": "Aprendizado",
       "text": "Foi nesse momento que deixei de enxergar o software apenas como código e passei a enxergá-lo como um produto que precisa continuar funcionando enquanto evolui. A virada de sistema único para SaaS — com um cliente real já usando — tornou concreto o que antes era teórico: isolamento de dados, consistência transacional e testes como documentação viva do comportamento esperado."
@@ -400,6 +407,13 @@
       "heading": "Learning",
       "text": "This is when I stopped seeing software as just code and started seeing it as a product that must keep working while it evolves. The pivot from a single-tenant system to a SaaS — with a real client already using it — made concrete what had been theoretical: data isolation, transactional consistency and tests as living documentation of expected behaviour."
     },
+    "screenshots": [
+      { "file": "/assets/img/barber/01-dashboard.webp",   "alt": "Financial dashboard with net profit and payment method reconciliation" },
+      { "file": "/assets/img/barber/02-tela-vendas.webp", "alt": "Sales screen with per-barber commission tracking" },
+      { "file": "/assets/img/barber/03-agendamentos.webp","alt": "Availability grid and scheduling calendar" },
+      { "file": "/assets/img/barber/04-chat-ia.webp",     "alt": "AI assistant answering business questions" },
+      { "file": "/assets/img/barber/05-pwa.webp",         "alt": "PWA installed on mobile" }
+    ],
     "navigation": {
       "back_label": "← Home",
       "back_url": "/en/",

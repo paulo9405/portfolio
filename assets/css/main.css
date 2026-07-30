@@ -932,6 +932,22 @@ p + p { margin-top: var(--sp-4); }
   max-width: 68ch;
 }
 
+/* Galeria de capturas */
+.case-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 560px), 1fr));
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-6);
+}
+
+.case-gallery__img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+}
+
 /* Diagrama SVG */
 .case-diagram {
   display: block;

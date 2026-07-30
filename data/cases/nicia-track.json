@@ -204,6 +204,12 @@
         "Migração Render → AWS concluída sem perda de dados. Infraestrutura com separação clara de responsabilidades: Cloudflare (DNS/TLS) → Nginx (proxy) → Gunicorn (WSGI) → Django → RDS (banco). Arquivos de mídia persistentes no S3. Security Group do RDS sem exposição à internet."
       ]
     },
+    "screenshots": [
+      { "file": "/assets/img/nicia/01-dashboard.webp",     "alt": "Dashboard com streak e progresso de estudos" },
+      { "file": "/assets/img/nicia/02-simulado.webp",      "alt": "Simulado em andamento com questões de múltipla escolha" },
+      { "file": "/assets/img/nicia/03-caderno-erros.webp", "alt": "Caderno de erros com questões revisadas" },
+      { "file": "/assets/img/nicia/04-aws-ec2.webp",       "alt": "Console AWS mostrando instância EC2 em execução" }
+    ],
     "learning": {
       "heading": "Aprendizado",
       "text": "Migração incremental — uma camada de cada vez, com critério de aceitação antes de avançar — é a única forma de diagnosticar o que quebra sem colapsar tudo ao mesmo tempo. E segurança por design de rede (SG do RDS só aceitando o SG da EC2) é mais confiável do que segurança por senha: elimina a superfície de ataque antes de precisar de credencial."
@@ -420,6 +426,12 @@
         "Render → AWS migration completed without data loss. Infrastructure with clear separation of responsibilities: Cloudflare (DNS/TLS) → Nginx (proxy) → Gunicorn (WSGI) → Django → RDS (database). Persistent media files on S3. RDS Security Group with no internet exposure."
       ]
     },
+    "screenshots": [
+      { "file": "/assets/img/nicia/01-dashboard.webp",     "alt": "Dashboard with study streak and progress" },
+      { "file": "/assets/img/nicia/02-simulado.webp",      "alt": "Active practice exam with multiple choice questions" },
+      { "file": "/assets/img/nicia/03-caderno-erros.webp", "alt": "Error notebook with reviewed questions" },
+      { "file": "/assets/img/nicia/04-aws-ec2.webp",       "alt": "AWS console showing EC2 instance running" }
+    ],
     "learning": {
       "heading": "Learning",
       "text": "Incremental migration — one layer at a time, with an acceptance criterion before moving forward — is the only way to diagnose what breaks without collapsing everything at once. And security by network design (RDS SG only accepting the EC2 SG) is more reliable than security by password: it eliminates the attack surface before needing a credential."
