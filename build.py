@@ -97,14 +97,14 @@ def build_cases(env: Environment, cases: list[dict]):
 
             if is_en:
                 out_dir = DIST / "en" / "cases"
-                canonical = f"{BASE_URL}/en/cases/{slug}.html"
-                hreflang_pt = f"{BASE_URL}/casos/{pt_slug}.html"
+                canonical = f"{BASE_URL}/en/cases/{slug}"
+                hreflang_pt = f"{BASE_URL}/casos/{pt_slug}"
                 hreflang_en = canonical
             else:
                 out_dir = DIST / "casos"
-                canonical = f"{BASE_URL}/casos/{slug}.html"
+                canonical = f"{BASE_URL}/casos/{slug}"
                 hreflang_pt = canonical
-                hreflang_en = f"{BASE_URL}/en/cases/{en_slug}.html"
+                hreflang_en = f"{BASE_URL}/en/cases/{en_slug}"
 
             out_dir.mkdir(parents=True, exist_ok=True)
 
@@ -134,9 +134,9 @@ def build_styleguide(env: Environment):
             "title": "Styleguide — Paulo Souza Portfolio",
             "description": "Componentes do design system. Não indexado.",
         },
-        "canonical_url": f"{BASE_URL}/styleguide.html",
-        "hreflang_pt": f"{BASE_URL}/styleguide.html",
-        "hreflang_en": f"{BASE_URL}/styleguide.html",
+        "canonical_url": f"{BASE_URL}/styleguide",
+        "hreflang_pt": f"{BASE_URL}/styleguide",
+        "hreflang_en": f"{BASE_URL}/styleguide",
         "root_url": "/",
         "pt_url": "/",
         "en_url": "/en/",
@@ -147,7 +147,7 @@ def build_styleguide(env: Environment):
 
 
 def generate_robots():
-    content = f"User-agent: *\nDisallow: /styleguide.html\nSitemap: {BASE_URL}/sitemap.xml\n"
+    content = f"User-agent: *\nDisallow: /styleguide\nSitemap: {BASE_URL}/sitemap.xml\n"
     (DIST / "robots.txt").write_text(content, encoding="utf-8")
 
 
@@ -160,8 +160,8 @@ def generate_sitemap(cases: list[dict]):
     for case_data in cases:
         pt_slug = case_data["pt"]["slug"]
         en_slug = case_data["en"]["slug"]
-        urls.append((f"{BASE_URL}/casos/{pt_slug}.html",      "0.8"))
-        urls.append((f"{BASE_URL}/en/cases/{en_slug}.html",   "0.8"))
+        urls.append((f"{BASE_URL}/casos/{pt_slug}",      "0.8"))
+        urls.append((f"{BASE_URL}/en/cases/{en_slug}",   "0.8"))
 
     lines = ['<?xml version="1.0" encoding="UTF-8"?>',
              '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']

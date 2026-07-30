@@ -58,7 +58,7 @@
         "items": [
           {
             "key": "Problema",
-            "value": "Código quebrado podia ir direto ao ar. Push na main disparava deploy imediato no Render, sem rodar lint nem testes. Com uma usuária de baixa familiaridade técnica dependendo do sistema, qualquer regressão visible virava um incidente."
+            "value": "Código quebrado podia ir direto ao ar. Push na main disparava deploy imediato no Render, sem rodar lint nem testes. Com uma usuária de baixa familiaridade técnica dependendo do sistema, qualquer regressão visível virava um incidente."
           },
           {
             "key": "Alternativas",
@@ -225,9 +225,9 @@
     },
     "navigation": {
       "back_label": "← Barber Cashflow",
-      "back_url": "/casos/barber-cashflow.html",
+      "back_url": "/casos/barber-cashflow",
       "next_label": "Nícia Track →",
-      "next_url": "/casos/nicia-track.html"
+      "next_url": "/casos/nicia-track"
     }
   },
   "en": {
@@ -456,9 +456,9 @@
     },
     "navigation": {
       "back_label": "← Barber Cashflow",
-      "back_url": "/en/cases/barber-cashflow.html",
+      "back_url": "/en/cases/barber-cashflow",
       "next_label": "Nícia Track →",
-      "next_url": "/en/cases/nicia-track.html"
+      "next_url": "/en/cases/nicia-track"
     }
   }
 }

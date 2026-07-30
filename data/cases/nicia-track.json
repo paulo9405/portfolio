@@ -4,7 +4,7 @@
     "name": "Nícia Track",
     "status": "EM PRODUÇÃO",
     "status_type": "on",
-    "period": "2025 – Atual · plataforma de estudos em uso",
+    "period": "2025 – Atual · plataforma de estudos em uso diário",
     "role": "Desenvolvido integralmente por Paulo. Migração completa de Render para AWS realizada em produção.",
     "meta": {
       "title": "Nícia Track — Paulo Souza",
@@ -26,6 +26,11 @@
         "value": "Render → AWS",
         "label": "migração realizada em produção: EC2 + RDS + S3",
         "ref": ""
+      },
+      {
+        "value": "1 usuária ativa",
+        "label": "uso diário na preparação para concursos e processos seletivos",
+        "ref": ""
       }
     ],
     "stack": [
@@ -35,7 +40,7 @@
     "problem": {
       "heading": "O problema",
       "paragraphs": [
-        "Plataforma de questões para estudos com conteúdo real e usuários ativos. O sistema foi iniciado no Render — solução adequada para o MVP. À medida que a plataforma cresceu, surgiram limitações práticas: instância hibernando em idle, sem suporte a armazenamento persistente de arquivos de mídia entre deploys, e necessidade de controle maior sobre a infraestrutura.",
+        "Plataforma de questões para estudos com conteúdo real e uma usuária ativa, em uso diário na preparação para concursos públicos e processos seletivos. O sistema foi iniciado no Render — solução adequada para o MVP. À medida que a plataforma cresceu, surgiram limitações práticas: instância hibernando em idle, sem suporte a armazenamento persistente de arquivos de mídia entre deploys, e necessidade de controle maior sobre a infraestrutura.",
         "A decisão de migrar para AWS não foi tomada por modismo técnico. Cada componente da migração resolveu um problema concreto: EC2 elimina a hibernação, RDS externaliza o banco com backups gerenciados, S3 persiste os arquivos de mídia entre redeploys, e Cloudflare fica na frente gerenciando DNS e TLS.",
         "O ângulo técnico deste caso: colocar em produção a pilha completa 'do DNS ao banco' — Cloudflare → Nginx → Gunicorn → Django → RDS — e entender o que quebra em cada camada."
       ]
@@ -129,7 +134,7 @@
         "items": [
           {
             "key": "Problema",
-            "value": "CMD do Dockerfile rodava migrate antes de iniciar o Gunicorn. Com múltiplas réplicas ou restarts, migrations podiam rodar em paralelo — causando race condition nas alterações de schema. Descoberto em produção quando duas instâncias subiram ao mesmo tempo."
+            "value": "CMD do Dockerfile rodava migrate antes de iniciar o Gunicorn. Durante o deploy, o container novo sobe antes do antigo ser derrubado. Com os dois rodando migrate no startup, as migrations disparavam em paralelo — causando race condition nas alterações de schema. Descoberto em produção quando duas instâncias subiram ao mesmo tempo."
           },
           {
             "key": "Alternativas",
@@ -137,7 +142,7 @@
           },
           {
             "key": "Escolha",
-            "value": "Job separado de migrations que roda antes do deploy das réplicas da aplicação. CMD do container inicia apenas o Gunicorn. A separação torna explícito que migrations são uma operação de banco — não de aplicação — e que devem rodar exatamente uma vez por deploy."
+            "value": "Job separado de migrations que roda antes de subir o container da aplicação. CMD do container inicia apenas o Gunicorn. A separação torna explícito que migrations são uma operação de banco — não de aplicação — e que devem rodar exatamente uma vez por deploy."
           },
           {
             "key": "Resultado",
@@ -169,11 +174,11 @@
         },
         {
           "marker": "INCIDENTE",
-          "title": "Migrations rodando em paralelo na subida de múltiplas réplicas",
+          "title": "Migrations rodando em paralelo na subida de container novo e antigo",
           "items": [
             {
               "key": "Sintoma",
-              "value": "Com o CMD do Dockerfile executando migrate no startup, quando duas instâncias subiram simultaneamente durante um deploy, ambas tentaram aplicar as mesmas migrations ao mesmo tempo. Erro de lock no banco."
+              "value": "Com o CMD do Dockerfile executando migrate no startup, quando o container novo subiu com o antigo ainda de pé, ambas tentaram aplicar as mesmas migrations ao mesmo tempo. Erro de lock no banco."
             },
             {
               "key": "Correção",
@@ -200,7 +205,7 @@
     "result": {
       "heading": "Resultado",
       "paragraphs": [
-        "Plataforma com 800 questões em 13 disciplinas, operando em produção na AWS. ~3.171 linhas de testes automatizados com suite rápida graças ao MD5Hasher e SQLite em memória no ambiente de testes.",
+        "Plataforma com 800 questões em 13 disciplinas, operando em produção na AWS, com uma usuária em uso diário desde o deploy. ~3.171 linhas de testes automatizados com suite rápida graças ao MD5Hasher e SQLite em memória no ambiente de testes.",
         "Migração Render → AWS concluída sem perda de dados. Infraestrutura com separação clara de responsabilidades: Cloudflare (DNS/TLS) → Nginx (proxy) → Gunicorn (WSGI) → Django → RDS (banco). Arquivos de mídia persistentes no S3. Security Group do RDS sem exposição à internet."
       ]
     },
@@ -216,9 +221,9 @@
     },
     "navigation": {
       "back_label": "← Gestão de Açaí",
-      "back_url": "/casos/gestao-acai.html",
+      "back_url": "/casos/gestao-acai",
       "next_label": "Automação e Web Scraping →",
-      "next_url": "/casos/automacao-scraping.html"
+      "next_url": "/casos/automacao-scraping"
     }
   },
   "en": {
@@ -226,7 +231,7 @@
     "name": "Nícia Track",
     "status": "IN PRODUCTION",
     "status_type": "on",
-    "period": "2025 – Present · study platform in active use",
+    "period": "2025 – Present · study platform in daily use",
     "role": "Built entirely by Paulo. Full migration from Render to AWS completed in production.",
     "meta": {
       "title": "Nícia Track — Paulo Souza",
@@ -248,6 +253,11 @@
         "value": "Render → AWS",
         "label": "production migration: EC2 + RDS + S3",
         "ref": ""
+      },
+      {
+        "value": "1 active user",
+        "label": "daily use, preparing for public-service exams and job selection",
+        "ref": ""
       }
     ],
     "stack": [
@@ -257,7 +267,7 @@
     "problem": {
       "heading": "The problem",
       "paragraphs": [
-        "Question-based study platform with real content and active users. The system was started on Render — adequate for the MVP. As the platform grew, practical limitations emerged: the instance hibernating when idle, no persistent media file storage between deploys, and the need for more control over the infrastructure.",
+        "Question-based study platform with real content and one active user, in daily use preparing for Brazilian public-service exams and job selection processes. The system was started on Render — adequate for the MVP. As the platform grew, practical limitations emerged: the instance hibernating when idle, no persistent media file storage between deploys, and the need for more control over the infrastructure.",
         "The decision to migrate to AWS was not made out of technical trend-following. Each migration component solved a concrete problem: EC2 eliminates hibernation, RDS externalises the database with managed backups, S3 persists media files between redeploys, and Cloudflare sits in front handling DNS and TLS.",
         "The technical angle of this case: putting the full stack into production 'from DNS to database' — Cloudflare → Nginx → Gunicorn → Django → RDS — and understanding what breaks at each layer."
       ]
@@ -351,7 +361,7 @@
         "items": [
           {
             "key": "Problem",
-            "value": "The Dockerfile CMD ran migrate before starting Gunicorn. With multiple replicas or restarts, migrations could run in parallel — causing a race condition on schema changes. Discovered in production when two instances started simultaneously."
+            "value": "The Dockerfile CMD ran migrate before starting Gunicorn. During a deploy, the new container comes up before the old one is torn down. With both running migrate on startup, migrations fired in parallel — causing a race condition on schema changes. Discovered in production when two instances started simultaneously."
           },
           {
             "key": "Alternatives",
@@ -359,7 +369,7 @@
           },
           {
             "key": "Choice",
-            "value": "Dedicated migration job that runs before replica deployment. Container CMD now starts only Gunicorn. The separation makes explicit that migrations are a database operation — not an application one — and must run exactly once per deploy."
+            "value": "Dedicated migration job that runs before starting the application container. Container CMD now starts only Gunicorn. The separation makes explicit that migrations are a database operation — not an application one — and must run exactly once per deploy."
           },
           {
             "key": "Result",
@@ -391,11 +401,11 @@
         },
         {
           "marker": "INCIDENT",
-          "title": "Migrations running in parallel on multiple replica startup",
+          "title": "Migrations running in parallel on new and old container overlap",
           "items": [
             {
               "key": "Symptom",
-              "value": "With the Dockerfile CMD running migrate on startup, when two instances came up simultaneously during a deploy, both tried to apply the same migrations at the same time. Database lock error."
+              "value": "With the Dockerfile CMD running migrate on startup, when the new container came up while the old one was still running, both tried to apply the same migrations at the same time. Database lock error."
             },
             {
               "key": "Fix",
@@ -422,7 +432,7 @@
     "result": {
       "heading": "Result",
       "paragraphs": [
-        "Platform with 800 questions across 13 subjects, operating in production on AWS. ~3,171 lines of automated tests with a fast suite thanks to MD5Hasher and in-memory SQLite in the testing environment.",
+        "Platform with 800 questions across 13 subjects, operating in production on AWS, with one user in daily use since deploy. ~3,171 lines of automated tests with a fast suite thanks to MD5Hasher and in-memory SQLite in the testing environment.",
         "Render → AWS migration completed without data loss. Infrastructure with clear separation of responsibilities: Cloudflare (DNS/TLS) → Nginx (proxy) → Gunicorn (WSGI) → Django → RDS (database). Persistent media files on S3. RDS Security Group with no internet exposure."
       ]
     },
@@ -438,9 +448,9 @@
     },
     "navigation": {
       "back_label": "← Açaí Management",
-      "back_url": "/en/cases/acai-management.html",
+      "back_url": "/en/cases/acai-management",
       "next_label": "Automation & Web Scraping →",
-      "next_url": "/en/cases/automation-scraping.html"
+      "next_url": "/en/cases/automation-scraping"
     }
   }
 }

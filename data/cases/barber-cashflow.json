@@ -77,7 +77,7 @@
           },
           {
             "key": "Resultado",
-            "value": "Múltiplas barbearias na mesma instância Django e no mesmo banco PostgreSQL, sem vazamento entre elas. Adicionar novo tenant não requer redeploy nem nova instância de banco."
+            "value": "Um tenant pagante em produção. A arquitetura suporta múltiplas barbearias na mesma instância Django e no mesmo banco PostgreSQL, e adicionar um novo tenant não requer redeploy nem nova instância de banco — o isolamento entre eles é garantido por filtro obrigatório em queryset e provado por teste, não por volume de operação."
           }
         ]
       },
@@ -189,7 +189,7 @@
       "heading": "Resultado",
       "paragraphs": [
         "+R$ 245 mil em volume transacionado pelo sistema entre 25/11/2025 e 29/07/2026 (~8 meses), com ~7.000 vendas registradas e 5 barbeiros operando diariamente. Recorte por forma de pagamento: PIX R$ 143.335 · Cartão R$ 72.210 · Dinheiro R$ 30.150.",
-        "Zero vazamento de dados entre tenants em 8 meses de operação. Suíte de +4.000 linhas de testes automatizados cobrindo isolamento multi-tenant, atomicidade de operações financeiras, soft delete e a interface RAG."
+        "Nenhum incidente de isolamento em 8 meses com o tenant em produção. O acesso cross-tenant é coberto por testes que tentam ativamente ler dados de outro tenant e verificam o retorno 404. Suíte de +4.000 linhas de testes automatizados cobrindo isolamento multi-tenant, atomicidade de operações financeiras, soft delete e a interface RAG."
       ]
     },
     "screenshots": [
@@ -207,7 +207,7 @@
       "back_label": "← Início",
       "back_url": "/",
       "next_label": "Gestão de Açaí →",
-      "next_url": "/casos/gestao-acai.html"
+      "next_url": "/casos/gestao-acai"
     }
   },
   "en": {
@@ -288,7 +288,7 @@
           },
           {
             "key": "Result",
-            "value": "Multiple barbershops on the same Django instance and the same PostgreSQL database, with zero cross-tenant leakage. Adding a new tenant requires no redeploy and no new database instance."
+            "value": "One paying tenant in production. The architecture supports multiple barbershops on the same Django instance and the same PostgreSQL database, and adding a new tenant requires no redeploy and no new database instance — isolation between them is enforced by mandatory queryset filtering and proven by tests, not by operating at scale."
           }
         ]
       },
@@ -400,7 +400,7 @@
       "heading": "Result",
       "paragraphs": [
         "R$245K in transaction volume processed by the system between 25/11/2025 and 29/07/2026 (~8 months), with ~7,000 sales recorded and 5 barbers operating daily. Payment method breakdown: PIX R$143,335 · Card R$72,210 · Cash R$30,150.",
-        "Zero cross-tenant data leakage in 8 months of operation. The +4,000-line automated test suite covers multi-tenant isolation, financial transaction atomicity, soft delete and the RAG interface."
+        "No isolation incidents in 8 months with the tenant in production. Cross-tenant access is covered by tests that actively attempt to read another tenant's data and verify the 404 response. The +4,000-line automated test suite covers multi-tenant isolation, financial transaction atomicity, soft delete and the RAG interface."
       ]
     },
     "learning": {
@@ -418,7 +418,7 @@
       "back_label": "← Home",
       "back_url": "/en/",
       "next_label": "Açaí Management →",
-      "next_url": "/en/cases/acai-management.html"
+      "next_url": "/en/cases/acai-management"
     }
   }
 }

@@ -71,18 +71,18 @@
         "tagline": "Plataforma de estudos construída do domínio à infraestrutura AWS — do DNS ao banco.",
         "metric": "800 questões / 13 disciplinas",
         "metric_label": "conteúdo curado do edital à questão",
-        "problem_solved": "Media perdida a cada redeploy no PaaS gratuito — migrei para AWS com RDS + S3 + django-storages.",
+        "problem_solved": "Mídia perdida a cada redeploy no PaaS gratuito — migrei para AWS com RDS + S3 + django-storages.",
         "stack_chips": ["Django", "PostgreSQL", "AWS", "Docker", "Nginx"]
       },
       {
         "slug": "automacao-scraping",
         "name": "Automação e Web Scraping",
-        "status": "CONCLUÍDO",
+        "status": "DESAFIO TÉCNICO · ATIVO",
         "status_type": "off",
         "tagline": "Serviço de automação (desafio técnico) que consulta portal público e devolve dados estruturados + screenshot via API.",
         "metric": "6 incidentes de produção",
         "metric_label": "resolvidos e documentados",
-        "problem_solved": "networkidle nunca resolvia — scripts de analytics mantêm conexões abertas indefinidamente — substituído por espera em seletor específico.",
+        "problem_solved": "networkidle nunca resolvia — scripts de analytics mantêm conexões abertas indefinidamente — substituído por domcontentloaded.",
         "stack_chips": ["FastAPI", "Playwright", "Docker", "Nginx", "AWS EC2"]
       }
     ],
@@ -106,7 +106,7 @@
       "github_handle": "paulo9405",
       "linkedin_url": "https://linkedin.com/in/paulorgs",
       "linkedin_handle": "paulorgs",
-      "cv_filename": "PauloSouza-CV-2026-PT.pdf",
+      "cv_url": "/assets/cv/PauloSouza-CV-2026-PT.pdf",
       "cv_label": "Download CV (Português)"
     }
   },
@@ -188,12 +188,12 @@
       {
         "slug": "automation-scraping",
         "name": "Automation & Web Scraping",
-        "status": "COMPLETED",
+        "status": "TECHNICAL CHALLENGE · ACTIVE",
         "status_type": "off",
         "tagline": "Automation service (technical challenge) that queries a public portal and returns structured data + screenshot via API.",
         "metric": "6 production incidents",
         "metric_label": "resolved and documented",
-        "problem_solved": "networkidle never settled — analytics scripts keep connections open indefinitely — replaced by waiting on a specific selector.",
+        "problem_solved": "networkidle never settled — analytics scripts keep connections open indefinitely — replaced by domcontentloaded.",
         "stack_chips": ["FastAPI", "Playwright", "Docker", "Nginx", "AWS EC2"]
       }
     ],
@@ -212,13 +212,13 @@
       "phone_url": "tel:+5538991367737",
       "location": "Buritizeiro — MG, Brazil · Available for on-site, hybrid or remote",
       "location_short": "Buritizeiro — MG, Brazil",
-      "availability": "Open to relocation",
+      "availability": "Open to relocation within Brazil",
       "github_url": "https://github.com/paulo9405",
       "github_handle": "paulo9405",
       "linkedin_url": "https://linkedin.com/in/paulorgs",
       "linkedin_handle": "paulorgs",
-      "cv_filename": "PauloSouza-CV-2026-PT.pdf",
-      "cv_label": "Download CV (Portuguese)"
+      "cv_url": "/assets/cv/PauloSouza-CV-2026-EN.pdf",
+      "cv_label": "Download CV (English)"
     }
   }
 }

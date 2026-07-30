@@ -2,9 +2,9 @@
   "pt": {
     "slug": "automacao-scraping",
     "name": "Automação e Web Scraping",
-    "status": "EM PRODUÇÃO",
-    "status_type": "on",
-    "period": "2025 – Atual · serviço ativo, operando 24/7 em EC2",
+    "status": "DESAFIO TÉCNICO · ATIVO",
+    "status_type": "off",
+    "period": "Desafio técnico · 2025 – Atual · serviço de pé em EC2",
     "role": "Serviço de automação construído como desafio técnico. Desenvolvido integralmente por Paulo.",
     "meta": {
       "title": "Automação e Web Scraping — Paulo Souza",
@@ -154,11 +154,11 @@
             },
             {
               "key": "Causa",
-              "value": "proxy_read_timeout padrão do Nginx é 60 segundos. O Nginx encerrava a conexão com o cliente antes do FastAPI retornar a resposta do Playwright."
+              "value": "O padrão do Nginx para proxy_read_timeout é 60s. Eu já havia configurado 120s no bloco location, mas o fluxo mais longo — com etapas extras de navegação — ainda ultrapassava esse limite, e o Nginx encerrava a conexão com o cliente antes do FastAPI retornar a resposta do Playwright."
             },
             {
               "key": "Correção",
-              "value": "proxy_read_timeout ajustado de 120s para 300s no bloco location do Nginx. O timeout do Nginx precisa ser maior que o timeout do Playwright — não igual."
+              "value": "proxy_read_timeout: padrão de 60s → 120s (ainda insuficiente) → 300s, no bloco location do Nginx. O timeout do Nginx precisa ser maior que o do Playwright — não igual. Bastou recarregar o Nginx, sem rebuild do container."
             }
           ]
         },
@@ -236,7 +236,7 @@
     },
     "navigation": {
       "back_label": "← Nícia Track",
-      "back_url": "/casos/nicia-track.html",
+      "back_url": "/casos/nicia-track",
       "next_label": "",
       "next_url": ""
     }
@@ -244,9 +244,9 @@
   "en": {
     "slug": "automation-scraping",
     "name": "Automation & Web Scraping",
-    "status": "IN PRODUCTION",
-    "status_type": "on",
-    "period": "2025 – Present · active service, running 24/7 on EC2",
+    "status": "TECHNICAL CHALLENGE · ACTIVE",
+    "status_type": "off",
+    "period": "Technical challenge · 2025 – Present · service running on EC2",
     "role": "Automation service built as a technical challenge. Built entirely by Paulo.",
     "meta": {
       "title": "Automation & Web Scraping — Paulo Souza",
@@ -261,7 +261,7 @@
       },
       {
         "value": "async",
-        "label": "async Playwright — concurrent navigation without thread blocking",
+        "label": "playwright.async_api — concurrent navigation without thread blocking",
         "ref": ""
       },
       {
@@ -396,11 +396,11 @@
             },
             {
               "key": "Cause",
-              "value": "Nginx's default proxy_read_timeout is 60 seconds. Nginx closed the connection with the client before FastAPI returned the Playwright response."
+              "value": "Nginx's default proxy_read_timeout is 60 seconds. I had already configured 120s in the location block, but the longer flow — with extra navigation steps — still exceeded that limit, and Nginx closed the connection with the client before FastAPI returned the Playwright response."
             },
             {
               "key": "Fix",
-              "value": "proxy_read_timeout adjusted from 120s to 300s in the Nginx location block. The Nginx timeout must be greater than the Playwright timeout — not equal to it."
+              "value": "proxy_read_timeout: 60s default → 120s (still insufficient) → 300s, in the Nginx location block. The Nginx timeout must be greater than the Playwright timeout — not equal to it. Reloading Nginx was enough, no container rebuild."
             }
           ]
         },
@@ -478,7 +478,7 @@
     },
     "navigation": {
       "back_label": "← Nícia Track",
-      "back_url": "/en/cases/nicia-track.html",
+      "back_url": "/en/cases/nicia-track",
       "next_label": "",
       "next_url": ""
     }

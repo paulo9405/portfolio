@@ -52,7 +52,7 @@
       </ul>
 
       <div class="hero__ctas animate-line" style="--i:4">
-        <a href="/assets/cv/{{ contact.cv_filename }}"
+        <a href="{{ contact.cv_url }}"
            class="btn btn--primary"
            download
            aria-label="{{ contact.cv_label }}">{{ hero.cta_cv }}</a>
@@ -121,7 +121,7 @@
           <span class="chip">{{ chip }}</span>
           {% endfor %}
         </div>
-        <a href="{{ '/en/cases/' if lang == 'en' else '/casos/' }}{{ case.slug }}.html"
+        <a href="{{ '/en/cases/' if lang == 'en' else '/casos/' }}{{ case.slug }}"
            class="case-card__link">
           {% if lang == "pt" %}Ver o caso completo →{% else %}Read the full case →{% endif %}
         </a>
@@ -189,7 +189,7 @@
 
       <div class="contact-item">
         <span class="contact-item__label">CV</span>
-        <a href="/assets/cv/{{ contact.cv_filename }}"
+        <a href="{{ contact.cv_url }}"
            class="contact-item__link"
            download>{{ contact.cv_label }}</a>
       </div>
