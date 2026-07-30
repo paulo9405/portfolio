@@ -24,7 +24,7 @@
       },
       {
         "value": "80%",
-        "label": "gate de cobertura — build falha abaixo disso",
+        "label": "gate de cobertura: build falha abaixo disso",
         "ref": ""
       },
       {
@@ -40,14 +40,14 @@
     "problem": {
       "heading": "O problema",
       "paragraphs": [
-        "Sistema financeiro em uso diário por funcionários de um estabelecimento real da família — uma usuária de baixa familiaridade técnica. Uma regressão em produção não é um bug abstrato: atrapalha o dia da loja, o fechamento de caixa e o controle de estoque.",
+        "Sistema financeiro em uso diário por funcionários de um estabelecimento real da família; a usuária é de baixa familiaridade técnica. Uma regressão em produção não é um bug abstrato: atrapalha o dia da loja, o fechamento de caixa e o controle de estoque.",
         "O sistema já tinha ~296 testes e backup diário configurado. Mas nada impedia que código quebrado fosse ao ar: o Render fazia deploy direto a cada git push, sem rodar teste nenhum. A proteção existia só no papel.",
         "O fechamento de caixa levava cerca de uma hora porque era feito manualmente, conciliando registros de formas de pagamento diferentes sem visibilidade consolidada. Com o módulo de caixa, o mesmo processo passou a levar ~10 minutos."
       ]
     },
     "architecture": {
       "heading": "Arquitetura",
-      "description": "Django com CBVs e arquitetura em camadas (View → Service → Selector → Model); PostgreSQL no Neon (serverless, sem servidor para gerenciar); hospedagem no Render; GitHub Actions orquestrando lint, testes e deploy; backup diário via workflow agendado no GitHub Actions — pg_dump do endpoint direto do Neon → gzip → rclone → Google Drive → rotação dos 15 mais recentes. Nenhum artefato persiste no runner.",
+      "description": "Django com CBVs e arquitetura em camadas (View → Service → Selector → Model); PostgreSQL no Neon (serverless, sem servidor para gerenciar); hospedagem no Render; GitHub Actions orquestrando lint, testes e deploy; backup diário via workflow agendado no GitHub Actions: pg_dump do endpoint direto do Neon → gzip → rclone → Google Drive → rotação dos 15 mais recentes. Nenhum artefato persiste no runner.",
       "diagram_note": "Pipeline CI/CD e backup diário automatizado",
       "svg_path": "/assets/img/acai/diagram.svg"
     },
@@ -62,7 +62,7 @@
           },
           {
             "key": "Alternativas",
-            "value": "Confiança manual: rodar os testes localmente antes de fazer push. Funciona até o dia em que não funciona. Deploy automático com toggle: desligar o auto-deploy e fazer deploy manual — troca uma automação por outra, mais frágil."
+            "value": "Confiança manual: rodar os testes localmente antes de fazer push. Funciona até o dia em que não funciona. Deploy automático com toggle: desligar o auto-deploy e fazer deploy manual. Troca uma automação por outra, mais frágil."
           },
           {
             "key": "Escolha",
@@ -70,7 +70,7 @@
           },
           {
             "key": "Resultado",
-            "value": "Nenhum deploy acontece com CI vermelho. A main está sempre em estado deployável. O pipeline virou registro no repositório — qualquer pessoa que olhar o código entende exatamente o que precisa passar para ir a produção."
+            "value": "Nenhum deploy acontece com CI vermelho. A main está sempre em estado deployável. O pipeline virou registro no repositório: qualquer pessoa que olhar o código entende exatamente o que precisa passar para ir a produção."
           }
         ]
       },
@@ -110,7 +110,7 @@
           },
           {
             "key": "Resultado",
-            "value": "Backup diário automatizado, sem servidor extra para manter. Rotação automática de 15 arquivos. O próprio GitHub Actions registra cada execução — auditável, sem dependência de infraestrutura adicional."
+            "value": "Backup diário automatizado, sem servidor extra para manter. Rotação automática de 15 arquivos. O próprio GitHub Actions registra cada execução: auditável, sem dependência de infraestrutura adicional."
           }
         ]
       },
@@ -168,7 +168,7 @@
             },
             {
               "key": "Correção",
-              "value": "Usar o endpoint direto do Neon (sem pooler) na variável de ambiente do workflow. O Neon disponibiliza os dois endpoints — o com pooler para a aplicação e o direto para operações de administração."
+              "value": "Usar o endpoint direto do Neon (sem pooler) na variável de ambiente do workflow. O Neon disponibiliza os dois endpoints: o com pooler para a aplicação e o direto para operações de administração."
             }
           ]
         },
@@ -212,16 +212,16 @@
     "screenshots": [
       { "file": "/assets/img/acai/01-fechamento.webp",   "alt": "Tela de fechamento de caixa diário" },
       { "file": "/assets/img/acai/02-pedidos-dia.webp",  "alt": "Painel de pedidos do dia" },
-      { "file": "/assets/img/acai/03-relatorio-1.webp",  "alt": "Relatório de vendas — parte 1" },
-      { "file": "/assets/img/acai/04-relatorio-2.webp",  "alt": "Relatório de vendas — parte 2" },
-      { "file": "/assets/img/acai/05-relatorio-3.webp",  "alt": "Relatório de vendas — parte 3" },
+      { "file": "/assets/img/acai/03-relatorio-1.webp",  "alt": "Relatório de vendas, parte 1" },
+      { "file": "/assets/img/acai/04-relatorio-2.webp",  "alt": "Relatório de vendas, parte 2" },
+      { "file": "/assets/img/acai/05-relatorio-3.webp",  "alt": "Relatório de vendas, parte 3" },
       { "file": "/assets/img/acai/06-dashboard.webp",    "alt": "Dashboard financeiro" },
       { "file": "/assets/img/acai/07-ci-pipeline.webp",  "alt": "Pipeline CI/CD com jobs de lint, testes e coverage" },
       { "file": "/assets/img/acai/08-backup-drive.webp", "alt": "Pasta no Google Drive com backups datados e rotação automática" }
     ],
     "learning": {
       "heading": "Aprendizado",
-      "text": "Ter testes sem trava de deploy é ter uma rede de segurança com buracos. O CI/CD não é complexidade extra — é o que transforma testes em garantia real. E backup sem validação do upload não é backup: é um ritual que dá sensação de segurança sem a segurança de fato."
+      "text": "Ter testes sem trava de deploy é ter uma rede de segurança com buracos. O CI/CD não é complexidade extra: é o que transforma testes em garantia real. E backup sem validação do upload não é backup: é um ritual que dá sensação de segurança sem a segurança de fato."
     },
     "navigation": {
       "back_label": "← Barber Cashflow",
@@ -255,7 +255,7 @@
       },
       {
         "value": "80%",
-        "label": "coverage gate — build fails below this",
+        "label": "coverage gate: build fails below this",
         "ref": ""
       },
       {
@@ -271,14 +271,14 @@
     "problem": {
       "heading": "The problem",
       "paragraphs": [
-        "Financial management system used daily by staff at a real family business. The primary user is non-technical: a regression in production is not an abstract bug — it disrupts the working day, the cash closing and inventory control.",
+        "Financial management system used daily by staff at a real family business. The primary user is non-technical: a regression in production is not an abstract bug. It disrupts the working day, the cash closing and inventory control.",
         "The system already had ~296 tests and a daily backup configured. But nothing prevented broken code from going live: Render deployed directly on every git push, without running a single test. The protection existed only on paper.",
         "The daily cash closing took about an hour because it was done manually, reconciling records from different payment methods without a consolidated view. With the till module, the same process now takes ~10 minutes."
       ]
     },
     "architecture": {
       "heading": "Architecture",
-      "description": "Django with CBVs and a layered architecture (View → Service → Selector → Model); PostgreSQL on Neon (serverless, no server to manage); hosted on Render; GitHub Actions orchestrating lint, tests and deployment; daily backup via scheduled GitHub Actions workflow — pg_dump from Neon's direct endpoint → gzip → rclone → Google Drive → rotation of the 15 most recent files. No artefacts persist on the ephemeral runner.",
+      "description": "Django with CBVs and a layered architecture (View → Service → Selector → Model); PostgreSQL on Neon (serverless, no server to manage); hosted on Render; GitHub Actions orchestrating lint, tests and deployment; daily backup via scheduled GitHub Actions workflow: pg_dump from Neon's direct endpoint → gzip → rclone → Google Drive → rotation of the 15 most recent files. No artefacts persist on the ephemeral runner.",
       "diagram_note": "CI/CD pipeline and automated daily backup",
       "svg_path": "/assets/img/acai/diagram.svg"
     },
@@ -293,7 +293,7 @@
           },
           {
             "key": "Alternatives",
-            "value": "Manual discipline: run tests locally before every push. Works until the day it doesn't. Deploy with toggle: disable auto-deploy and deploy manually — swaps one automation for a more fragile one."
+            "value": "Manual discipline: run tests locally before every push. Works until the day it doesn't. Deploy with toggle: disable auto-deploy and deploy manually. It swaps one automation for a more fragile one."
           },
           {
             "key": "Choice",
@@ -301,7 +301,7 @@
           },
           {
             "key": "Result",
-            "value": "No deployment happens with a red CI. Main is always in a deployable state. The pipeline is version-controlled in the repository — anyone reading the code understands exactly what must pass before going to production."
+            "value": "No deployment happens with a red CI. Main is always in a deployable state. The pipeline is version-controlled in the repository: anyone reading the code understands exactly what must pass before going to production."
           }
         ]
       },
@@ -341,7 +341,7 @@
           },
           {
             "key": "Result",
-            "value": "Automated daily backup with no extra server to maintain. Automatic rotation of 15 files. Every GitHub Actions run is logged and auditable — no dependency on additional infrastructure."
+            "value": "Automated daily backup with no extra server to maintain. Automatic rotation of 15 files. Every GitHub Actions run is logged and auditable, with no dependency on additional infrastructure."
           }
         ]
       },
@@ -399,7 +399,7 @@
             },
             {
               "key": "Fix",
-              "value": "Use Neon's direct endpoint (without pooler) in the workflow environment variable. Neon provides both endpoints — the pooled one for the application and the direct one for administrative operations."
+              "value": "Use Neon's direct endpoint (without pooler) in the workflow environment variable. Neon provides both endpoints: the pooled one for the application and the direct one for administrative operations."
             }
           ]
         },
@@ -443,16 +443,16 @@
     "screenshots": [
       { "file": "/assets/img/acai/01-fechamento.webp",   "alt": "Daily cash closing screen" },
       { "file": "/assets/img/acai/02-pedidos-dia.webp",  "alt": "Daily orders panel" },
-      { "file": "/assets/img/acai/03-relatorio-1.webp",  "alt": "Sales report — part 1" },
-      { "file": "/assets/img/acai/04-relatorio-2.webp",  "alt": "Sales report — part 2" },
-      { "file": "/assets/img/acai/05-relatorio-3.webp",  "alt": "Sales report — part 3" },
+      { "file": "/assets/img/acai/03-relatorio-1.webp",  "alt": "Sales report, part 1" },
+      { "file": "/assets/img/acai/04-relatorio-2.webp",  "alt": "Sales report, part 2" },
+      { "file": "/assets/img/acai/05-relatorio-3.webp",  "alt": "Sales report, part 3" },
       { "file": "/assets/img/acai/06-dashboard.webp",    "alt": "Financial dashboard" },
       { "file": "/assets/img/acai/07-ci-pipeline.webp",  "alt": "CI/CD pipeline with lint, tests and coverage jobs" },
       { "file": "/assets/img/acai/08-backup-drive.webp", "alt": "Google Drive folder with dated backups and automatic rotation" }
     ],
     "learning": {
       "heading": "Learning",
-      "text": "Having tests without a deployment gate means having a safety net with holes. CI/CD is not added complexity — it is what turns tests into a real guarantee. And a backup without upload validation is not a backup: it is a ritual that gives a sense of security without the security itself."
+      "text": "Having tests without a deployment gate means having a safety net with holes. CI/CD is not added complexity: it is what turns tests into a real guarantee. And a backup without upload validation is not a backup: it is a ritual that gives a sense of security without the security itself."
     },
     "navigation": {
       "back_label": "← Barber Cashflow",

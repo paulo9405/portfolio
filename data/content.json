@@ -2,12 +2,12 @@
   "pt": {
     "meta": {
       "title": "Paulo Souza — Desenvolvedor Backend Python",
-      "description": "Portfólio de Paulo Souza — Backend Python. Três sistemas em produção, SaaS multi-tenant com cliente pagante, CI/CD e infraestrutura AWS."
+      "description": "Portfólio de Paulo Souza, Backend Python. Três sistemas em produção, SaaS multi-tenant com cliente pagante, CI/CD e infraestrutura AWS."
     },
     "hero": {
       "name": "Paulo Souza",
       "role": "Desenvolvedor Backend Python",
-      "tagline": "Construí e mantenho sozinho três sistemas em produção — incluindo um SaaS multi-tenant com cliente pagante. Da modelagem de dados ao deploy, com testes, CI/CD e infraestrutura na AWS.",
+      "tagline": "Construí e mantenho sozinho três sistemas em produção, incluindo um SaaS multi-tenant com cliente pagante. Da modelagem de dados ao deploy, com testes, CI/CD e infraestrutura na AWS.",
       "status_label": "DISPONÍVEL",
       "proof_chips": [
         "SaaS em produção com cliente pagante",
@@ -49,7 +49,7 @@
         "tagline": "SaaS multi-tenant que leva agendamento, venda, comissão, estoque e caixa de uma barbearia real à produção.",
         "metric": "+R$ 245 mil transacionados",
         "metric_label": "volume transacionado pelo sistema em ~8 meses",
-        "problem_solved": "N+1 na listagem de vendas: 20 vendas geravam ~61 queries — corrigido com select_related + prefetch_related.",
+        "problem_solved": "N+1 na listagem de vendas: 20 vendas geravam 61 queries. Corrigido com select_related + prefetch_related.",
         "stack_chips": ["Django", "DRF", "PostgreSQL", "Docker", "PWA"]
       },
       {
@@ -68,10 +68,10 @@
         "name": "Nícia Track",
         "status": "EM PRODUÇÃO",
         "status_type": "on",
-        "tagline": "Plataforma de estudos construída do domínio à infraestrutura AWS — do DNS ao banco.",
+        "tagline": "Plataforma de estudos construída do domínio à infraestrutura AWS: do DNS ao banco.",
         "metric": "800 questões / 13 disciplinas",
         "metric_label": "conteúdo curado do edital à questão",
-        "problem_solved": "Mídia perdida a cada redeploy no PaaS gratuito — migrei para AWS com RDS + S3 + django-storages.",
+        "problem_solved": "Mídia perdida a cada redeploy no PaaS gratuito. Migrei para AWS com RDS + S3 + django-storages.",
         "stack_chips": ["Django", "PostgreSQL", "AWS", "Docker", "Nginx"]
       },
       {
@@ -82,16 +82,16 @@
         "tagline": "Serviço de automação (desafio técnico) que consulta portal público e devolve dados estruturados + screenshot via API.",
         "metric": "6 incidentes de produção",
         "metric_label": "resolvidos e documentados",
-        "problem_solved": "networkidle nunca resolvia — scripts de analytics mantêm conexões abertas indefinidamente — substituído por domcontentloaded.",
+        "problem_solved": "networkidle nunca resolvia: scripts de analytics mantêm conexões abertas indefinidamente. Substituí por domcontentloaded.",
         "stack_chips": ["FastAPI", "Playwright", "Docker", "Nginx", "AWS EC2"]
       }
     ],
     "about": {
       "heading": "Sobre",
       "paragraphs": [
-        "Autodidata. Tenho três sistemas em produção que construí e mantenho sozinho — do problema ao deploy, com testes, CI/CD e infraestrutura real.",
-        "Entre 2022 e 2026 morei na Irlanda, onde trabalhei como supervisor operacional em uma rede de conveniência por três anos e cursei dois anos do BSc em Ciência da Computação. O inglês veio de imersão. O domínio de negócio veio de operação real: caixa, estoque, comissão, fechamento diário. É por isso que os sistemas que construo são de gestão operacional e financeira — eu já fui o usuário desse tipo de software.",
-        "Procuro vaga em produto onde o software seja o negócio — equipe com prática estabelecida de revisão de código e base de código com histórico para aprender."
+        "Autodidata. Tenho três sistemas em produção que construí e mantenho sozinho, do problema ao deploy, com testes, CI/CD e infraestrutura real.",
+        "Entre 2022 e 2026 morei na Irlanda, onde trabalhei como supervisor operacional em uma rede de conveniência por três anos e cursei dois anos do BSc em Ciência da Computação. O inglês veio de imersão. O domínio de negócio veio de operação real: caixa, estoque, comissão, fechamento diário. É por isso que os sistemas que construo são de gestão operacional e financeira. Eu já fui o usuário desse tipo de software.",
+        "Procuro vaga em produto onde o software seja o negócio: equipe com prática estabelecida de revisão de código e base de código com histórico para aprender."
       ]
     },
     "contact": {
@@ -104,8 +104,8 @@
       "availability": "Aberto a realocação",
       "github_url": "https://github.com/paulo9405",
       "github_handle": "paulo9405",
-      "linkedin_url": "https://linkedin.com/in/paulorgs",
-      "linkedin_handle": "paulorgs",
+      "linkedin_url": "https://linkedin.com/in/paulogomesdev",
+      "linkedin_handle": "paulogomesdev",
       "cv_url": "/assets/cv/PauloSouza-CV-2026-PT.pdf",
       "cv_label": "Download CV (Português)"
     }
@@ -113,12 +113,12 @@
   "en": {
     "meta": {
       "title": "Paulo Souza — Backend Python Developer",
-      "description": "Portfolio of Paulo Souza — Backend Python Developer. Three systems in production, multi-tenant SaaS with a paying client, CI/CD and AWS infrastructure."
+      "description": "Portfolio of Paulo Souza, Backend Python Developer. Three systems in production, multi-tenant SaaS with a paying client, CI/CD and AWS infrastructure."
     },
     "hero": {
       "name": "Paulo Souza",
       "role": "Backend Python Developer",
-      "tagline": "I built and maintain three production systems on my own — including a multi-tenant SaaS with a paying client. From data modelling to deployment, with tests, CI/CD and AWS infrastructure.",
+      "tagline": "I built and maintain three production systems on my own, including a multi-tenant SaaS with a paying client. From data modelling to deployment, with tests, CI/CD and AWS infrastructure.",
       "status_label": "AVAILABLE",
       "proof_chips": [
         "SaaS in production with a paying client",
@@ -160,7 +160,7 @@
         "tagline": "Multi-tenant SaaS that brings scheduling, sales, commissions, inventory and cash flow of a real barbershop into production.",
         "metric": "R$245K in transaction volume",
         "metric_label": "processed by the system in ~8 months",
-        "problem_solved": "N+1 on sales listing: 20 sales triggered ~61 queries — fixed with select_related + prefetch_related.",
+        "problem_solved": "N+1 on sales listing: 20 sales triggered 61 queries. Fixed with select_related + prefetch_related.",
         "stack_chips": ["Django", "DRF", "PostgreSQL", "Docker", "PWA"]
       },
       {
@@ -179,10 +179,10 @@
         "name": "Nícia Track",
         "status": "IN PRODUCTION",
         "status_type": "on",
-        "tagline": "Study platform built end-to-end — from domain knowledge to AWS infrastructure, from DNS to the database.",
+        "tagline": "Study platform built end-to-end: from domain knowledge to AWS infrastructure, from DNS to the database.",
         "metric": "800 questions / 13 subjects",
         "metric_label": "curated from the exam syllabus",
-        "problem_solved": "Media files lost on every PaaS redeploy — migrated to AWS with RDS + S3 + django-storages.",
+        "problem_solved": "Media files lost on every PaaS redeploy. Migrated to AWS with RDS + S3 + django-storages.",
         "stack_chips": ["Django", "PostgreSQL", "AWS", "Docker", "Nginx"]
       },
       {
@@ -193,16 +193,16 @@
         "tagline": "Automation service (technical challenge) that queries a public portal and returns structured data + screenshot via API.",
         "metric": "6 production incidents",
         "metric_label": "resolved and documented",
-        "problem_solved": "networkidle never settled — analytics scripts keep connections open indefinitely — replaced by domcontentloaded.",
+        "problem_solved": "networkidle never settled: analytics scripts keep connections open indefinitely. Replaced with domcontentloaded.",
         "stack_chips": ["FastAPI", "Playwright", "Docker", "Nginx", "AWS EC2"]
       }
     ],
     "about": {
       "heading": "About",
       "paragraphs": [
-        "Self-taught. I built and maintain three production systems on my own — from problem to deployment, with tests, CI/CD and real infrastructure.",
-        "Between 2022 and 2026 I lived in Ireland, working as an operational supervisor at a convenience store chain for three years and studying two years of a BSc in Computer Science. My English came from immersion. My business domain knowledge came from real operations: till management, inventory, commissions, daily closing. That is why the systems I build are operational and financial management tools — I have been the user of this kind of software.",
-        "I am looking for a product role where software is the business — a team with an established code review practice and a codebase with history to learn from."
+        "Self-taught. I built and maintain three production systems on my own, from problem to deployment, with tests, CI/CD and real infrastructure.",
+        "Between 2022 and 2026 I lived in Ireland, working as an operational supervisor at a convenience store chain for three years and studying two years of a BSc in Computer Science. My English came from immersion. My business domain knowledge came from real operations: till management, inventory, commissions, daily closing. That is why the systems I build are operational and financial management tools; I have been the user of this kind of software.",
+        "I am looking for a product role where software is the business: a team with an established code review practice and a codebase with history to learn from."
       ]
     },
     "contact": {
@@ -215,8 +215,8 @@
       "availability": "Open to relocation within Brazil",
       "github_url": "https://github.com/paulo9405",
       "github_handle": "paulo9405",
-      "linkedin_url": "https://linkedin.com/in/paulorgs",
-      "linkedin_handle": "paulorgs",
+      "linkedin_url": "https://linkedin.com/in/paulogomesdev",
+      "linkedin_handle": "paulogomesdev",
       "cv_url": "/assets/cv/PauloSouza-CV-2026-EN.pdf",
       "cv_label": "Download CV (English)"
     }

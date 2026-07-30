@@ -5,7 +5,7 @@
     "status": "EM PRODUÇÃO",
     "status_type": "on",
     "period": "Novembro 2025 – Atual (ref. 29/07/2026, ~8 meses)",
-    "role": "Produto próprio — desenvolvido, implantado e mantido integralmente por Paulo.",
+    "role": "Produto próprio: desenvolvido, implantado e mantido integralmente por Paulo.",
     "meta": {
       "title": "Barber Cashflow — Paulo Souza",
       "description": "SaaS multi-tenant para barbearias: +R$ 245 mil transacionados, ~7.000 vendas, isolamento multi-tenant com testes, N+1 corrigido em produção."
@@ -49,7 +49,7 @@
       "paragraphs": [
         "A barbearia registrava agendamentos, vendas, comissões e caixa de forma manual e dispersa. Sem visibilidade consolidada, fechar o dia exigia reconciliar anotações de fontes diferentes. O pedido inicial era um sistema de agendamento.",
         "No meio do desenvolvimento veio uma virada: a arquitetura comportava mais de uma barbearia. O sistema virou SaaS. Essa decisão trouxe, de uma vez, isolamento de dados entre tenants, responsabilidade sobre LGPD e a necessidade de subir atualizações sem interromper uma operação que já rodava com cliente real.",
-        "O sistema hoje registra vendas por forma de pagamento (PIX, cartão, dinheiro), calcula comissão por barbeiro por venda, controla estoque e fecha o caixa com conciliação automática. Funciona como PWA — instalável no celular do barbeiro, com operação offline parcial."
+        "O sistema hoje registra vendas por forma de pagamento (PIX, cartão, dinheiro), calcula comissão por barbeiro por venda, controla estoque e fecha o caixa com conciliação automática. Funciona como PWA: instalável no celular do barbeiro, com operação offline parcial."
       ]
     },
     "architecture": {
@@ -65,7 +65,7 @@
         "items": [
           {
             "key": "Problema",
-            "value": "Múltiplas barbearias precisam de isolamento total de dados. Um barbeiro de um salão não pode ver — nem acessar por erro — os dados de outro."
+            "value": "Múltiplas barbearias precisam de isolamento total de dados. Um barbeiro de um salão não pode ver, nem acessar por erro, os dados de outro."
           },
           {
             "key": "Alternativas",
@@ -77,7 +77,7 @@
           },
           {
             "key": "Resultado",
-            "value": "Um tenant pagante em produção. A arquitetura suporta múltiplas barbearias na mesma instância Django e no mesmo banco PostgreSQL, e adicionar um novo tenant não requer redeploy nem nova instância de banco — o isolamento entre eles é garantido por filtro obrigatório em queryset e provado por teste, não por volume de operação."
+            "value": "Um tenant pagante em produção. A arquitetura suporta múltiplas barbearias na mesma instância Django e no mesmo banco PostgreSQL, e adicionar um novo tenant não requer redeploy nem nova instância de banco. O isolamento entre eles é garantido por filtro obrigatório em queryset e provado por teste, não por volume de operação."
           }
         ]
       },
@@ -91,11 +91,11 @@
           },
           {
             "key": "Alternativas",
-            "value": "403 (Forbidden): semanticamente correto — o recurso existe, mas o acesso é negado. 404 (Not Found): não revela se o recurso existe ou não."
+            "value": "403 (Forbidden): semanticamente correto, já que o recurso existe mas o acesso é negado. 404 (Not Found): não revela se o recurso existe ou não."
           },
           {
             "key": "Escolha",
-            "value": "404. A view trata o recurso de outro tenant como inexistente para o tenant solicitante. Os testes de isolamento tentam ativamente acessar dados de outro tenant e verificam que recebem 404 — não 403."
+            "value": "404. A view trata o recurso de outro tenant como inexistente para o tenant solicitante. Os testes de isolamento tentam ativamente acessar dados de outro tenant e verificam que a resposta é 404, e não 403."
           },
           {
             "key": "Resultado",
@@ -113,7 +113,7 @@
           },
           {
             "key": "Escolha",
-            "value": "transaction.atomic() envolve toda a operação de cancelamento. Se qualquer etapa falhar — por exceção Python, erro de banco ou violação de constraint — o PostgreSQL reverte todas as alterações automaticamente."
+            "value": "transaction.atomic() envolve toda a operação de cancelamento. Se qualquer etapa falhar (por exceção Python, erro de banco ou violação de constraint), o PostgreSQL reverte todas as alterações automaticamente."
           },
           {
             "key": "Resultado",
@@ -145,7 +145,7 @@
         "items": [
           {
             "key": "Problema",
-            "value": "Os barbeiros e o dono precisam consultar dados do sistema em linguagem natural — saldo do dia, comissão da semana, produto com estoque baixo. Keyword search não entende variações naturais de pergunta nem contexto financeiro."
+            "value": "Os barbeiros e o dono precisam consultar dados do sistema em linguagem natural: saldo do dia, comissão da semana, produto com estoque baixo. Keyword search não entende variações naturais de pergunta nem contexto financeiro."
           },
           {
             "key": "Escolha",
@@ -153,7 +153,7 @@
           },
           {
             "key": "Resultado",
-            "value": "O usuário pergunta em linguagem natural e recebe resposta contextualizada com dados reais do sistema, sem navegar por menus. Não é keyword search com GPT na frente — é retrieval semântico de verdade."
+            "value": "O usuário pergunta em linguagem natural e recebe resposta contextualizada com dados reais do sistema, sem navegar por menus. O retrieval é semântico de verdade, não keyword search com GPT na frente."
           }
         ]
       }
@@ -167,7 +167,7 @@
           "items": [
             {
               "key": "Sintoma",
-              "value": "A listagem de 20 vendas demorava visivelmente. O cliente notou a lentidão semanas depois de o sistema entrar em produção — não havia monitoramento de query count configurado no início."
+              "value": "A listagem de 20 vendas demorava visivelmente. O cliente notou a lentidão semanas depois de o sistema entrar em produção. Não havia monitoramento de query count configurado no início."
             },
             {
               "key": "Investigação",
@@ -179,7 +179,7 @@
             },
             {
               "key": "Correção",
-              "value": "select_related('barbeiro', 'servico') para as FKs diretas — vira JOIN único. prefetch_related('agendamento') para a relação inversa — vira query IN separada. Resultado: 61 queries → 3 queries. Mesma listagem, sem alteração no template."
+              "value": "select_related('barbeiro', 'servico') para as FKs diretas, vira um JOIN único. prefetch_related('agendamento') para a relação inversa, vira uma query IN separada. Resultado: 61 queries → 3 queries. Mesma listagem, sem alteração no template."
             }
           ]
         }
@@ -201,7 +201,7 @@
     ],
     "learning": {
       "heading": "Aprendizado",
-      "text": "Foi nesse momento que deixei de enxergar o software apenas como código e passei a enxergá-lo como um produto que precisa continuar funcionando enquanto evolui. A virada de sistema único para SaaS — com um cliente real já usando — tornou concreto o que antes era teórico: isolamento de dados, consistência transacional e testes como documentação viva do comportamento esperado."
+      "text": "Foi nesse momento que deixei de enxergar o software apenas como código e passei a enxergá-lo como um produto que precisa continuar funcionando enquanto evolui. A virada de sistema único para SaaS (com um cliente real já usando) tornou concreto o que antes era teórico: isolamento de dados, consistência transacional e testes como documentação viva do comportamento esperado."
     },
     "navigation": {
       "back_label": "← Início",
@@ -216,7 +216,7 @@
     "status": "IN PRODUCTION",
     "status_type": "on",
     "period": "November 2025 – Present (ref. 29/07/2026, ~8 months)",
-    "role": "Own product — designed, built, deployed and maintained entirely by Paulo.",
+    "role": "Own product: designed, built, deployed and maintained entirely by Paulo.",
     "meta": {
       "title": "Barber Cashflow — Paulo Souza",
       "description": "Multi-tenant SaaS for barbershops: R$245K in transaction volume, ~7,000 sales, tenant isolation validated by tests, N+1 fixed in production."
@@ -260,7 +260,7 @@
       "paragraphs": [
         "The barbershop tracked appointments, sales, commissions and cash flow manually and across separate tools. Without a consolidated view, closing the day meant reconciling notes from different sources. The original brief was a scheduling system.",
         "Partway through development, the scope pivoted: the architecture could support more than one barbershop. The system became a SaaS. That decision brought, all at once, data isolation between tenants, LGPD compliance responsibility (Brazil's data protection law), and the need to ship updates without disrupting an operation already running with a real paying client.",
-        "The system now records sales by payment method (PIX, card, cash), calculates per-barber commission per sale, manages inventory and closes the daily till with automatic reconciliation. It runs as a PWA — installable on the barber's phone, with partial offline support."
+        "The system now records sales by payment method (PIX, card, cash), calculates per-barber commission per sale, manages inventory and closes the daily till with automatic reconciliation. It runs as a PWA: installable on the barber's phone, with partial offline support."
       ]
     },
     "architecture": {
@@ -276,7 +276,7 @@
         "items": [
           {
             "key": "Problem",
-            "value": "Multiple barbershops need complete data isolation. A barber from one shop must never see — or accidentally access — another shop's data."
+            "value": "Multiple barbershops need complete data isolation. A barber from one shop must never see, or accidentally access, another shop's data."
           },
           {
             "key": "Alternatives",
@@ -288,7 +288,7 @@
           },
           {
             "key": "Result",
-            "value": "One paying tenant in production. The architecture supports multiple barbershops on the same Django instance and the same PostgreSQL database, and adding a new tenant requires no redeploy and no new database instance — isolation between them is enforced by mandatory queryset filtering and proven by tests, not by operating at scale."
+            "value": "One paying tenant in production. The architecture supports multiple barbershops on the same Django instance and the same PostgreSQL database, and adding a new tenant requires no redeploy and no new database instance. Isolation between them is enforced by mandatory queryset filtering and proven by tests, not by operating at scale."
           }
         ]
       },
@@ -302,11 +302,11 @@
           },
           {
             "key": "Alternatives",
-            "value": "403 (Forbidden): semantically correct — the resource exists but access is denied. 404 (Not Found): does not reveal whether the resource exists at all."
+            "value": "403 (Forbidden): semantically correct, since the resource exists but access is denied. 404 (Not Found): does not reveal whether the resource exists at all."
           },
           {
             "key": "Choice",
-            "value": "404. The view treats another tenant's resource as non-existent for the requesting tenant. Isolation tests actively attempt to access another tenant's data and verify they receive 404 — not 403."
+            "value": "404. The view treats another tenant's resource as non-existent for the requesting tenant. Isolation tests actively attempt to access another tenant's data and verify the response is a 404, not a 403."
           },
           {
             "key": "Result",
@@ -324,7 +324,7 @@
           },
           {
             "key": "Choice",
-            "value": "transaction.atomic() wraps the entire cancellation operation. If any step fails — Python exception, database error or constraint violation — PostgreSQL rolls back all changes automatically."
+            "value": "transaction.atomic() wraps the entire cancellation operation. If any step fails (Python exception, database error or constraint violation), PostgreSQL rolls back all changes automatically."
           },
           {
             "key": "Result",
@@ -356,7 +356,7 @@
         "items": [
           {
             "key": "Problem",
-            "value": "Barbers and the owner need to query system data in natural language — daily balance, weekly commission, low-stock products. Keyword search does not understand natural question variations or financial context."
+            "value": "Barbers and the owner need to query system data in natural language: daily balance, weekly commission, low-stock products. Keyword search does not understand natural question variations or financial context."
           },
           {
             "key": "Choice",
@@ -364,7 +364,7 @@
           },
           {
             "key": "Result",
-            "value": "Users ask in natural language and receive contextualised answers with real system data, without navigating menus. Not keyword search with GPT on top — real semantic retrieval."
+            "value": "Users ask in natural language and receive contextualised answers with real system data, without navigating menus. The retrieval is genuinely semantic, not keyword search with GPT on top."
           }
         ]
       }
@@ -378,7 +378,7 @@
           "items": [
             {
               "key": "Symptom",
-              "value": "Listing 20 sales was noticeably slow. The client flagged the slowness weeks after the system went live — there was no query-count monitoring configured at launch."
+              "value": "Listing 20 sales was noticeably slow. The client flagged the slowness weeks after the system went live. There was no query-count monitoring configured at launch."
             },
             {
               "key": "Investigation",
@@ -390,7 +390,7 @@
             },
             {
               "key": "Fix",
-              "value": "select_related('barbeiro', 'servico') for the direct FKs — becomes a single JOIN. prefetch_related('agendamento') for the reverse relation — becomes a separate IN query. Result: 61 queries → 3 queries. Same listing, no template changes."
+              "value": "select_related('barbeiro', 'servico') for the direct FKs, becomes a single JOIN. prefetch_related('agendamento') for the reverse relation, becomes a separate IN query. Result: 61 queries → 3 queries. Same listing, no template changes."
             }
           ]
         }
@@ -405,7 +405,7 @@
     },
     "learning": {
       "heading": "Learning",
-      "text": "This is when I stopped seeing software as just code and started seeing it as a product that must keep working while it evolves. The pivot from a single-tenant system to a SaaS — with a real client already using it — made concrete what had been theoretical: data isolation, transactional consistency and tests as living documentation of expected behaviour."
+      "text": "This is when I stopped seeing software as just code and started seeing it as a product that must keep working while it evolves. The pivot from a single-tenant system to a SaaS (with a real client already using it) made concrete what had been theoretical: data isolation, transactional consistency and tests as living documentation of expected behaviour."
     },
     "screenshots": [
       { "file": "/assets/img/barber/01-dashboard.webp",   "alt": "Financial dashboard with net profit and payment method reconciliation" },

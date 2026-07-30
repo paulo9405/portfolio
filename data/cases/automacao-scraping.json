@@ -19,7 +19,7 @@
       },
       {
         "value": "async",
-        "label": "Playwright assíncrono — navegação concorrente sem bloqueio de thread",
+        "label": "Playwright assíncrono: navegação concorrente sem bloqueio de thread",
         "ref": ""
       },
       {
@@ -34,14 +34,14 @@
     "problem": {
       "heading": "O problema",
       "paragraphs": [
-        "Serviço de automação construído como desafio técnico: navegar em um portal público via Playwright, extrair dados estruturados e servir os resultados via API REST. O desafio não está no scraping em si — está em fazê-lo de forma confiável em produção, onde o ambiente é diferente do local e os timeouts são reais.",
+        "Serviço de automação construído como desafio técnico: navegar em um portal público via Playwright, extrair dados estruturados e servir os resultados via API REST. O desafio não está no scraping em si, e sim em fazê-lo de forma confiável em produção, onde o ambiente é diferente do local e os timeouts são reais.",
         "Portais públicos têm comportamentos não documentados: scripts de analytics que nunca terminam de carregar, WAFs que adicionam latência variável, textos que existem como substrings uns dos outros, cliques que são interceptados por elementos sobrepostos. Cada um desses casos se manifestou de forma diferente em produção do que no ambiente local.",
-        "O aspecto mais valioso deste projeto não é o código que funcionou — é o registro dos seis problemas que apareceram só em produção e a forma como cada um foi isolado e corrigido."
+        "O aspecto mais valioso deste projeto não é o código que funcionou. É o registro dos seis problemas que apareceram só em produção e a forma como cada um foi isolado e corrigido."
       ]
     },
     "architecture": {
       "heading": "Arquitetura",
-      "description": "FastAPI recebe requisições e valida entrada/saída via Pydantic. Playwright assíncrono executa a navegação e extração de dados — async porque a operação é I/O-bound (espera de rede/DOM), não CPU-bound. Docker containeriza o serviço com Chromium. Nginx fica na frente como proxy reverso com proxy_read_timeout ajustado. EC2 hospeda o serviço. Swagger UI gerado automaticamente pelo FastAPI documenta todos os endpoints. Tratamento de erros em 3 camadas: validação de entrada (Pydantic), execução com timeout explícito (Playwright), e limpeza garantida no finally (fechar o browser mesmo que a extração falhe).",
+      "description": "FastAPI recebe requisições e valida entrada/saída via Pydantic. Playwright assíncrono executa a navegação e extração de dados; é async porque a operação é I/O-bound (espera de rede/DOM), não CPU-bound. Docker containeriza o serviço com Chromium. Nginx fica na frente como proxy reverso com proxy_read_timeout ajustado. EC2 hospeda o serviço. Swagger UI gerado automaticamente pelo FastAPI documenta todos os endpoints. Tratamento de erros em 3 camadas: validação de entrada (Pydantic), execução com timeout explícito (Playwright), e limpeza garantida no finally (fechar o browser mesmo que a extração falhe).",
       "diagram_note": "Pipeline de scraping: FastAPI → Playwright → Portal Público → JSON estruturado",
       "svg_path": "/assets/img/automacao/diagram.svg"
     },
@@ -52,11 +52,11 @@
         "items": [
           {
             "key": "Problema",
-            "value": "Scraping web é uma operação de espera: aguardar carregamento de rede, renderização de DOM, execução de JavaScript. Usar threads síncronas bloquearia o event loop do FastAPI durante todo o tempo de espera do navegador — podendo chegar a 3 minutos por requisição."
+            "value": "Scraping web é uma operação de espera: aguardar carregamento de rede, renderização de DOM, execução de JavaScript. Usar threads síncronas bloquearia o event loop do FastAPI durante todo o tempo de espera do navegador, que pode chegar a 3 minutos por requisição."
           },
           {
             "key": "Alternativas",
-            "value": "Multiprocessing: adequado para operações CPU-bound (compressão, parsing pesado). Adiciona overhead de IPC e memória. Threads síncronas: bloqueia o event loop. Para I/O-bound, async é a escolha certa — libera o event loop enquanto o navegador espera pela rede."
+            "value": "Multiprocessing: adequado para operações CPU-bound (compressão, parsing pesado). Adiciona overhead de IPC e memória. Threads síncronas: bloqueia o event loop. Para I/O-bound, async é a escolha certa: libera o event loop enquanto o navegador espera pela rede."
           },
           {
             "key": "Escolha",
@@ -74,7 +74,7 @@
         "items": [
           {
             "key": "Problema",
-            "value": "Sem separação explícita entre o que a API recebe e o que retorna, validação de entrada e formatação de saída ficam misturadas no mesmo modelo — ou pior, no código de scraping. Difícil de testar e de documentar."
+            "value": "Sem separação explícita entre o que a API recebe e o que retorna, validação de entrada e formatação de saída ficam misturadas no mesmo modelo ou, pior, no código de scraping. Difícil de testar e de documentar."
           },
           {
             "key": "Escolha",
@@ -92,11 +92,11 @@
         "items": [
           {
             "key": "Problema",
-            "value": "Se o scraping falha no meio da execução — timeout, elemento não encontrado, exceção inesperada — o browser fica aberto consumindo memória na EC2. Em produção, isso acumula e degrada o serviço ao longo do tempo."
+            "value": "Se o scraping falha no meio da execução (timeout, elemento não encontrado, exceção inesperada), o browser fica aberto consumindo memória na EC2. Em produção, isso acumula e degrada o serviço ao longo do tempo."
           },
           {
             "key": "Escolha",
-            "value": "Camada 1 (Pydantic): valida a entrada antes de qualquer operação. Camada 2 (try/except no Playwright): captura erros de navegação e timeout com mensagem de erro estruturada. Camada 3 (finally): fecha o browser e o contexto Playwright independentemente do resultado — sucesso ou falha. O finally não é opcional: é a garantia de limpeza."
+            "value": "Camada 1 (Pydantic): valida a entrada antes de qualquer operação. Camada 2 (try/except no Playwright): captura erros de navegação e timeout com mensagem de erro estruturada. Camada 3 (finally): fecha o browser e o contexto Playwright independentemente do resultado, seja sucesso ou falha. O finally não é opcional: é a garantia de limpeza."
           },
           {
             "key": "Resultado",
@@ -118,11 +118,11 @@
             },
             {
               "key": "Causa",
-              "value": "networkidle espera que todas as conexões de rede estejam encerradas. Scripts de terceiros (analytics, beacons) nunca param de fazer requisições — esse estado nunca é atingido em portais com tracking."
+              "value": "networkidle espera que todas as conexões de rede estejam encerradas. Scripts de terceiros (analytics, beacons) nunca param de fazer requisições, então esse estado nunca é atingido em portais com tracking."
             },
             {
               "key": "Correção",
-              "value": "Substituição de networkidle por domcontentloaded como wait_until. O DOM estar pronto é o sinal correto para scraping — não o silêncio da rede. Completamente independente de scripts de terceiros."
+              "value": "Substituição de networkidle por domcontentloaded como wait_until. O DOM pronto é o sinal correto para scraping; o silêncio da rede não. Completamente independente de scripts de terceiros."
             }
           ]
         },
@@ -140,7 +140,7 @@
             },
             {
               "key": "Correção",
-              "value": "Timeout do Playwright ajustado para 90 segundos para cobrir a latência real observada na EC2. O valor foi estabelecido empiricamente — não arbitrariamente — após medir o percentil 95 dos tempos de resposta em produção."
+              "value": "Timeout do Playwright ajustado para 90 segundos para cobrir a latência real observada na EC2. O valor saiu de medição: o percentil 95 dos tempos de resposta observados em produção."
             }
           ]
         },
@@ -154,11 +154,11 @@
             },
             {
               "key": "Causa",
-              "value": "O padrão do Nginx para proxy_read_timeout é 60s. Eu já havia configurado 120s no bloco location, mas o fluxo mais longo — com etapas extras de navegação — ainda ultrapassava esse limite, e o Nginx encerrava a conexão com o cliente antes do FastAPI retornar a resposta do Playwright."
+              "value": "O padrão do Nginx para proxy_read_timeout é 60s. Eu já havia configurado 120s no bloco location, mas o fluxo mais longo (com etapas extras de navegação) ainda ultrapassava esse limite, e o Nginx encerrava a conexão com o cliente antes do FastAPI retornar a resposta do Playwright."
             },
             {
               "key": "Correção",
-              "value": "proxy_read_timeout: padrão de 60s → 120s (ainda insuficiente) → 300s, no bloco location do Nginx. O timeout do Nginx precisa ser maior que o do Playwright — não igual. Bastou recarregar o Nginx, sem rebuild do container."
+              "value": "proxy_read_timeout: padrão de 60s → 120s (ainda insuficiente) → 300s, no bloco location do Nginx. O timeout do Nginx precisa ser maior que o do Playwright, nunca igual. Bastou recarregar o Nginx, sem rebuild do container."
             }
           ]
         },
@@ -168,7 +168,7 @@
           "items": [
             {
               "key": "Sintoma",
-              "value": "O código verificava se o texto da página continha '0 resultados' para detectar busca sem retorno. Buscas com 10.000 resultados eram incorretamente marcadas como vazias — '0 resultados' existe como substring dentro de '10.000 resultados'."
+              "value": "O código verificava se o texto da página continha '0 resultados' para detectar busca sem retorno. Buscas com 10.000 resultados eram incorretamente marcadas como vazias, porque '0 resultados' existe como substring dentro de '10.000 resultados'."
             },
             {
               "key": "Causa",
@@ -190,7 +190,7 @@
             },
             {
               "key": "Causa",
-              "value": "Uma tag label com CSS de posicionamento absoluto ficava sobreposta ao input. O clique atingia a label, não o input diretamente — comportamento diferente do esperado pela automação."
+              "value": "Uma tag label com CSS de posicionamento absoluto ficava sobreposta ao input. O clique atingia a label, não o input diretamente, um comportamento diferente do esperado pela automação."
             },
             {
               "key": "Correção",
@@ -208,7 +208,7 @@
             },
             {
               "key": "Causa",
-              "value": "innerText é sensível ao layout de renderização — o que é considerado 'texto visível' varia com o estado do CSS. Elementos com display:none ou visibility:hidden podem ser incluídos ou excluídos de forma imprevisível."
+              "value": "innerText é sensível ao layout de renderização: o que é considerado 'texto visível' varia com o estado do CSS. Elementos com display:none ou visibility:hidden podem ser incluídos ou excluídos de forma imprevisível."
             },
             {
               "key": "Correção",
@@ -221,7 +221,7 @@
     "result": {
       "heading": "Resultado",
       "paragraphs": [
-        "Serviço de scraping assíncrono operando em produção 24/7 em AWS EC2. Seis problemas específicos de produção identificados, isolados e resolvidos — cada um com causa raiz documentada.",
+        "Serviço de scraping assíncrono operando em produção 24/7 em AWS EC2. Seis problemas específicos de produção identificados, isolados e resolvidos, cada um com causa raiz documentada.",
         "API documentada via Swagger UI gerado automaticamente pelo FastAPI. Tratamento de erros em 3 camadas com limpeza garantida de recursos. Nenhum vazamento de processos de browser em operação contínua."
       ]
     },
@@ -232,7 +232,7 @@
     ],
     "learning": {
       "heading": "Aprendizado",
-      "text": "Ambientes de datacenter se comportam diferente de ambientes locais. WAF adiciona latência. networkidle nunca termina em portais com analytics. Timeouts precisam ser medidos em produção, não estimados localmente. O valor de um scraper em produção está nos casos que quebraram — não nos que funcionaram na primeira tentativa."
+      "text": "Ambientes de datacenter se comportam diferente de ambientes locais. WAF adiciona latência. networkidle nunca termina em portais com analytics. Timeouts precisam ser medidos em produção, não estimados localmente. O valor de um scraper em produção está nos casos que quebraram, não nos que funcionaram na primeira tentativa."
     },
     "navigation": {
       "back_label": "← Nícia Track",
@@ -261,7 +261,7 @@
       },
       {
         "value": "async",
-        "label": "playwright.async_api — concurrent navigation without thread blocking",
+        "label": "playwright.async_api: concurrent navigation without thread blocking",
         "ref": ""
       },
       {
@@ -276,14 +276,14 @@
     "problem": {
       "heading": "The problem",
       "paragraphs": [
-        "Automation service built as a technical challenge: navigate a public portal via Playwright, extract structured data and serve the results via REST API. The challenge is not in the scraping itself — it is in making it reliable in production, where the environment differs from local and timeouts are real.",
+        "Automation service built as a technical challenge: navigate a public portal via Playwright, extract structured data and serve the results via REST API. The challenge is not in the scraping itself but in making it reliable in production, where the environment differs from local and timeouts are real.",
         "Public portals have undocumented behaviours: analytics scripts that never finish loading, WAFs that add variable latency, strings that are substrings of one another, clicks intercepted by overlapping elements. Each of these cases manifested differently in production than in the local environment.",
-        "The most valuable aspect of this project is not the code that worked — it is the record of the six problems that only appeared in production and how each was isolated and fixed."
+        "The most valuable aspect of this project is not the code that worked. It is the record of the six problems that only appeared in production and how each was isolated and fixed."
       ]
     },
     "architecture": {
       "heading": "Architecture",
-      "description": "FastAPI receives requests and validates input/output via Pydantic. Async Playwright executes the navigation and data extraction — async because the operation is I/O-bound (network/DOM waiting), not CPU-bound. Docker containerises the service with Chromium. Nginx sits in front as a reverse proxy with adjusted proxy_read_timeout. EC2 hosts the service. Swagger UI automatically generated by FastAPI documents all endpoints. Three-layer error handling: input validation (Pydantic), execution with explicit timeout (Playwright), and guaranteed cleanup in finally (closing the browser even if extraction fails).",
+      "description": "FastAPI receives requests and validates input/output via Pydantic. Async Playwright executes the navigation and data extraction; it is async because the operation is I/O-bound (network/DOM waiting), not CPU-bound. Docker containerises the service with Chromium. Nginx sits in front as a reverse proxy with adjusted proxy_read_timeout. EC2 hosts the service. Swagger UI automatically generated by FastAPI documents all endpoints. Three-layer error handling: input validation (Pydantic), execution with explicit timeout (Playwright), and guaranteed cleanup in finally (closing the browser even if extraction fails).",
       "diagram_note": "Scraping pipeline: FastAPI → Playwright → Public Portal → structured JSON",
       "svg_path": "/assets/img/automacao/diagram.svg"
     },
@@ -294,11 +294,11 @@
         "items": [
           {
             "key": "Problem",
-            "value": "Web scraping is a waiting operation: waiting for network loading, DOM rendering, JavaScript execution. Using synchronous threads would block FastAPI's event loop for the entire browser wait time — potentially up to 3 minutes per request."
+            "value": "Web scraping is a waiting operation: waiting for network loading, DOM rendering, JavaScript execution. Using synchronous threads would block FastAPI's event loop for the entire browser wait time, potentially up to 3 minutes per request."
           },
           {
             "key": "Alternatives",
-            "value": "Multiprocessing: suitable for CPU-bound operations (compression, heavy parsing). Adds IPC and memory overhead. Synchronous threads: blocks the event loop. For I/O-bound work, async is the right choice — it frees the event loop while the browser waits for the network."
+            "value": "Multiprocessing: suitable for CPU-bound operations (compression, heavy parsing). Adds IPC and memory overhead. Synchronous threads: blocks the event loop. For I/O-bound work, async is the right choice: it frees the event loop while the browser waits for the network."
           },
           {
             "key": "Choice",
@@ -316,7 +316,7 @@
         "items": [
           {
             "key": "Problem",
-            "value": "Without explicit separation between what the API receives and what it returns, input validation and output formatting get mixed into the same model — or worse, into the scraping code. Hard to test and to document."
+            "value": "Without explicit separation between what the API receives and what it returns, input validation and output formatting get mixed into the same model or, worse, into the scraping code. Hard to test and to document."
           },
           {
             "key": "Choice",
@@ -334,11 +334,11 @@
         "items": [
           {
             "key": "Problem",
-            "value": "If scraping fails mid-execution — timeout, element not found, unexpected exception — the browser stays open consuming memory on the EC2. In production, this accumulates and degrades the service over time."
+            "value": "If scraping fails mid-execution (timeout, element not found, unexpected exception), the browser stays open consuming memory on the EC2. In production, this accumulates and degrades the service over time."
           },
           {
             "key": "Choice",
-            "value": "Layer 1 (Pydantic): validates input before any operation. Layer 2 (try/except in Playwright): captures navigation and timeout errors with a structured error message. Layer 3 (finally): closes the browser and Playwright context regardless of outcome — success or failure. The finally is not optional: it is the cleanup guarantee."
+            "value": "Layer 1 (Pydantic): validates input before any operation. Layer 2 (try/except in Playwright): captures navigation and timeout errors with a structured error message. Layer 3 (finally): closes the browser and Playwright context regardless of outcome, success or failure. The finally is not optional: it is the cleanup guarantee."
           },
           {
             "key": "Result",
@@ -360,11 +360,11 @@
             },
             {
               "key": "Cause",
-              "value": "networkidle waits for all network connections to be closed. Third-party scripts (analytics, beacons) never stop making requests — this state is never reached on portals with tracking."
+              "value": "networkidle waits for all network connections to be closed. Third-party scripts (analytics, beacons) never stop making requests, so this state is never reached on portals with tracking."
             },
             {
               "key": "Fix",
-              "value": "Replaced networkidle with domcontentloaded as wait_until. A ready DOM is the correct signal for scraping — not network silence. Completely independent of third-party scripts."
+              "value": "Replaced networkidle with domcontentloaded as wait_until. A ready DOM is the correct signal for scraping; network silence is not. Completely independent of third-party scripts."
             }
           ]
         },
@@ -382,7 +382,7 @@
             },
             {
               "key": "Fix",
-              "value": "Playwright timeout adjusted to 90 seconds to cover the actual latency observed on EC2. The value was established empirically — not arbitrarily — after measuring the 95th percentile of response times in production."
+              "value": "Playwright timeout adjusted to 90 seconds to cover the actual latency observed on EC2. The value came from measurement: the 95th percentile of response times observed in production."
             }
           ]
         },
@@ -396,11 +396,11 @@
             },
             {
               "key": "Cause",
-              "value": "Nginx's default proxy_read_timeout is 60 seconds. I had already configured 120s in the location block, but the longer flow — with extra navigation steps — still exceeded that limit, and Nginx closed the connection with the client before FastAPI returned the Playwright response."
+              "value": "Nginx's default proxy_read_timeout is 60 seconds. I had already configured 120s in the location block, but the longer flow (with extra navigation steps) still exceeded that limit, and Nginx closed the connection with the client before FastAPI returned the Playwright response."
             },
             {
               "key": "Fix",
-              "value": "proxy_read_timeout: 60s default → 120s (still insufficient) → 300s, in the Nginx location block. The Nginx timeout must be greater than the Playwright timeout — not equal to it. Reloading Nginx was enough, no container rebuild."
+              "value": "proxy_read_timeout: 60s default → 120s (still insufficient) → 300s, in the Nginx location block. The Nginx timeout must be larger than the Playwright timeout, never equal to it. Reloading Nginx was enough, no container rebuild."
             }
           ]
         },
@@ -410,7 +410,7 @@
           "items": [
             {
               "key": "Symptom",
-              "value": "The code checked if the page text contained '0 results' to detect empty searches. Searches with 10,000 results were incorrectly marked as empty — '0 results' exists as a substring inside '10,000 results'."
+              "value": "The code checked if the page text contained '0 results' to detect empty searches. Searches with 10,000 results were incorrectly marked as empty, because '0 results' exists as a substring inside '10,000 results'."
             },
             {
               "key": "Cause",
@@ -432,7 +432,7 @@
             },
             {
               "key": "Cause",
-              "value": "A label tag with absolute CSS positioning was overlaid on the input. The click hit the label, not the input directly — different behaviour from what the automation expected."
+              "value": "A label tag with absolute CSS positioning was overlaid on the input. The click hit the label, not the input directly, a behaviour different from what the automation expected."
             },
             {
               "key": "Fix",
@@ -450,7 +450,7 @@
             },
             {
               "key": "Cause",
-              "value": "innerText is sensitive to the rendering layout — what is considered 'visible text' varies with CSS state. Elements with display:none or visibility:hidden can be included or excluded unpredictably."
+              "value": "innerText is sensitive to the rendering layout: what is considered 'visible text' varies with CSS state. Elements with display:none or visibility:hidden can be included or excluded unpredictably."
             },
             {
               "key": "Fix",
@@ -463,7 +463,7 @@
     "result": {
       "heading": "Result",
       "paragraphs": [
-        "Async scraping service operating in production 24/7 on AWS EC2. Six specific production problems identified, isolated and resolved — each with a documented root cause.",
+        "Async scraping service operating in production 24/7 on AWS EC2. Six specific production problems identified, isolated and resolved, each with a documented root cause.",
         "API documented via Swagger UI automatically generated by FastAPI. Three-layer error handling with guaranteed resource cleanup. No browser process leaks during continuous operation."
       ]
     },
@@ -474,7 +474,7 @@
     ],
     "learning": {
       "heading": "Learning",
-      "text": "Datacenter environments behave differently from local environments. WAFs add latency. networkidle never ends on portals with analytics. Timeouts must be measured in production, not estimated locally. The value of a scraper in production lies in the cases that broke — not the ones that worked on the first try."
+      "text": "Datacenter environments behave differently from local environments. WAFs add latency. networkidle never ends on portals with analytics. Timeouts must be measured in production, not estimated locally. The value of a scraper in production lies in the cases that broke, not the ones that worked on the first try."
     },
     "navigation": {
       "back_label": "← Nícia Track",
