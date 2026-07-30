@@ -26,6 +26,7 @@ ASSETS_SRC = ROOT / "assets"
 DIST = ROOT / "dist"
 
 BASE_URL = "https://portfolio.paulodev.net"
+OG_IMAGE  = f"{BASE_URL}/assets/img/og-image.png"
 
 
 def load_content() -> dict:
@@ -66,6 +67,7 @@ def home_ctx(lang: str, data: dict, canonical: str, hreflang_pt: str, hreflang_e
         "cases": data["cases"],
         "about": data["about"],
         "contact": data["contact"],
+        "og_image": OG_IMAGE,
     }
 
 
@@ -117,6 +119,7 @@ def build_cases(env: Environment, cases: list[dict]):
                 "pt_url": "/",
                 "en_url": "/en/",
                 "case": case,
+                "og_image": OG_IMAGE,
             }
 
             tmpl = env.get_template("caso.html")
@@ -143,6 +146,38 @@ def build_styleguide(env: Environment):
     (DIST / "styleguide.html").write_text(tmpl.render(**ctx), encoding="utf-8")
 
 
+def generate_robots():
+    content = f"User-agent: *\nDisallow: /styleguide.html\nSitemap: {BASE_URL}/sitemap.xml\n"
+    (DIST / "robots.txt").write_text(content, encoding="utf-8")
+
+
+def generate_sitemap(cases: list[dict]):
+    today = "2026-07-29"
+    urls = [
+        (f"{BASE_URL}/",    "1.0"),
+        (f"{BASE_URL}/en/", "1.0"),
+    ]
+    for case_data in cases:
+        pt_slug = case_data["pt"]["slug"]
+        en_slug = case_data["en"]["slug"]
+        urls.append((f"{BASE_URL}/casos/{pt_slug}.html",      "0.8"))
+        urls.append((f"{BASE_URL}/en/cases/{en_slug}.html",   "0.8"))
+
+    lines = ['<?xml version="1.0" encoding="UTF-8"?>',
+             '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
+    for loc, priority in urls:
+        lines += [
+            "  <url>",
+            f"    <loc>{loc}</loc>",
+            f"    <lastmod>{today}</lastmod>",
+            f"    <changefreq>monthly</changefreq>",
+            f"    <priority>{priority}</priority>",
+            "  </url>",
+        ]
+    lines.append("</urlset>")
+    (DIST / "sitemap.xml").write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
 def main():
     if DIST.exists():
         shutil.rmtree(DIST)
@@ -156,9 +191,11 @@ def main():
     build_home(env, content)
     build_cases(env, cases)
     build_styleguide(env)
+    generate_robots()
+    generate_sitemap(cases)
 
     pages = list(DIST.rglob("*.html"))
-    print(f"Build concluído → {DIST} ({len(pages)} páginas)")
+    print(f"Build concluído → {DIST} ({len(pages)} páginas + robots.txt + sitemap.xml)")
 
 
 if __name__ == "__main__":

@@ -1,5 +1,28 @@
 {% extends "base.html" %}
 
+{% block head_extra %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "Paulo Souza",
+  "url": "https://portfolio.paulodev.net",
+  "email": {{ contact.email | tojson }},
+  "jobTitle": {{ hero.role | tojson }},
+  "address": {
+    "@type": "PostalAddress",
+    "addressLocality": "Buritizeiro",
+    "addressRegion": "MG",
+    "addressCountry": "BR"
+  },
+  "sameAs": [
+    {{ contact.linkedin_url | tojson }},
+    {{ contact.github_url | tojson }}
+  ]
+}
+</script>
+{% endblock %}
+
 {% block content %}
 
 {# ── HERO ──────────────────────────────────────────────────────────────── #}
