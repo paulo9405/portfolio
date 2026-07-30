@@ -271,7 +271,7 @@
     "problem": {
       "heading": "The problem",
       "paragraphs": [
-        "Financial management system used daily by staff at a real family business — a non-technical user. A regression in production is not an abstract bug: it disrupts the working day, the cash closing and inventory control.",
+        "Financial management system used daily by staff at a real family business. The primary user is non-technical: a regression in production is not an abstract bug — it disrupts the working day, the cash closing and inventory control.",
         "The system already had ~296 tests and a daily backup configured. But nothing prevented broken code from going live: Render deployed directly on every git push, without running a single test. The protection existed only on paper.",
         "The daily cash closing took about an hour because it was done manually, reconciling records from different payment methods without a consolidated view. With the till module, the same process now takes ~10 minutes."
       ]

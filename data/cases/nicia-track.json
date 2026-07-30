@@ -257,8 +257,8 @@
     "problem": {
       "heading": "The problem",
       "paragraphs": [
-        "Question-based study platform with real content and active users. The system was started on Render — adequate for the MVP. As the platform grew, practical limitations emerged: the instance hibernating on idle, no persistent media file storage between deploys, and the need for more control over the infrastructure.",
-        "The decision to migrate to AWS was not made out of technical trend-following. Each migration component solved a concrete problem: EC2 eliminates hibernation, RDS externalises the database with managed backups, S3 persists media files between redeploys, and Cloudflare handles DNS and TLS from the front.",
+        "Question-based study platform with real content and active users. The system was started on Render — adequate for the MVP. As the platform grew, practical limitations emerged: the instance hibernating when idle, no persistent media file storage between deploys, and the need for more control over the infrastructure.",
+        "The decision to migrate to AWS was not made out of technical trend-following. Each migration component solved a concrete problem: EC2 eliminates hibernation, RDS externalises the database with managed backups, S3 persists media files between redeploys, and Cloudflare sits in front handling DNS and TLS.",
         "The technical angle of this case: putting the full stack into production 'from DNS to database' — Cloudflare → Nginx → Gunicorn → Django → RDS — and understanding what breaks at each layer."
       ]
     },
@@ -283,7 +283,7 @@
           },
           {
             "key": "Result",
-            "value": "~3,171 lines of tests with no dependency on external infrastructure. Suite runs locally and in CI with acceptable time. New models inherit UUID PK and timestamps automatically."
+            "value": "~3,171 lines of tests with no dependency on external infrastructure. Suite runs locally and in CI in an acceptable time. New models inherit UUID PK and timestamps automatically."
           }
         ]
       },

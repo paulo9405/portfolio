@@ -277,7 +277,7 @@
       "heading": "The problem",
       "paragraphs": [
         "Automation service built as a technical challenge: navigate a public portal via Playwright, extract structured data and serve the results via REST API. The challenge is not in the scraping itself — it is in making it reliable in production, where the environment differs from local and timeouts are real.",
-        "Public portals have undocumented behaviours: analytics scripts that never finish loading, WAFs that add variable latency, texts that exist as substrings of each other, clicks intercepted by overlapping elements. Each of these cases manifested differently in production than in the local environment.",
+        "Public portals have undocumented behaviours: analytics scripts that never finish loading, WAFs that add variable latency, strings that are substrings of one another, clicks intercepted by overlapping elements. Each of these cases manifested differently in production than in the local environment.",
         "The most valuable aspect of this project is not the code that worked — it is the record of the six problems that only appeared in production and how each was isolated and fixed."
       ]
     },

@@ -259,7 +259,7 @@
       "heading": "The problem",
       "paragraphs": [
         "The barbershop tracked appointments, sales, commissions and cash flow manually and across separate tools. Without a consolidated view, closing the day meant reconciling notes from different sources. The original brief was a scheduling system.",
-        "Mid-development came a pivot: the architecture could support more than one barbershop. The system became a SaaS. That decision brought, all at once, data isolation between tenants, LGPD compliance responsibility, and the need to ship updates without disrupting an operation already running with a real paying client.",
+        "Partway through development, the scope pivoted: the architecture could support more than one barbershop. The system became a SaaS. That decision brought, all at once, data isolation between tenants, LGPD compliance responsibility (Brazil's data protection law), and the need to ship updates without disrupting an operation already running with a real paying client.",
         "The system now records sales by payment method (PIX, card, cash), calculates per-barber commission per sale, manages inventory and closes the daily till with automatic reconciliation. It runs as a PWA — installable on the barber's phone, with partial offline support."
       ]
     },

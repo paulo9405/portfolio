@@ -200,9 +200,9 @@
     "about": {
       "heading": "About",
       "paragraphs": [
-        "Self-taught. I have three production systems I built and maintain on my own — from the problem to deployment, with tests, CI/CD and real infrastructure.",
+        "Self-taught. I built and maintain three production systems on my own — from problem to deployment, with tests, CI/CD and real infrastructure.",
         "Between 2022 and 2026 I lived in Ireland, working as an operational supervisor at a convenience store chain for three years and studying two years of a BSc in Computer Science. My English came from immersion. My business domain knowledge came from real operations: till management, inventory, commissions, daily closing. That is why the systems I build are operational and financial management tools — I have been the user of this kind of software.",
-        "I am looking for a product role — a team with an established code review practice and a codebase with history to learn from."
+        "I am looking for a product role where software is the business — a team with an established code review practice and a codebase with history to learn from."
       ]
     },
     "contact": {
