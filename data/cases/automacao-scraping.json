@@ -48,7 +48,7 @@
     "decisions": [
       {
         "label": "DECISÃO",
-        "title": "Playwright assíncrono — async porque I/O-bound, não CPU-bound",
+        "title": "Playwright assíncrono: async porque I/O-bound, não CPU-bound",
         "items": [
           {
             "key": "Problema",
@@ -110,7 +110,7 @@
       "incidents": [
         {
           "marker": "INCIDENTE",
-          "title": "networkidle nunca resolvia — scripts de analytics bloqueavam o wait",
+          "title": "networkidle nunca resolvia: scripts de analytics bloqueavam o wait",
           "items": [
             {
               "key": "Sintoma",
@@ -128,7 +128,7 @@
         },
         {
           "marker": "INCIDENTE",
-          "title": "Timeout de 30s insuficiente na EC2 — WAF adicionava latência variável",
+          "title": "Timeout de 30s insuficiente na EC2: WAF adicionava latência variável",
           "items": [
             {
               "key": "Sintoma",
@@ -182,7 +182,7 @@
         },
         {
           "marker": "INCIDENTE",
-          "title": "Clique travado — label sobreposta interceptava o evento",
+          "title": "Clique travado: label sobreposta interceptava o evento",
           "items": [
             {
               "key": "Sintoma",
@@ -200,7 +200,7 @@
         },
         {
           "marker": "INCIDENTE",
-          "title": "Extração de texto instável — page.evaluate() com TreeWalker",
+          "title": "Extração de texto instável: page.evaluate() com TreeWalker",
           "items": [
             {
               "key": "Sintoma",
@@ -290,7 +290,7 @@
     "decisions": [
       {
         "label": "DECISION",
-        "title": "Async Playwright — async because I/O-bound, not CPU-bound",
+        "title": "Async Playwright: async because I/O-bound, not CPU-bound",
         "items": [
           {
             "key": "Problem",
@@ -352,7 +352,7 @@
       "incidents": [
         {
           "marker": "INCIDENT",
-          "title": "networkidle never resolved — analytics scripts blocked the wait",
+          "title": "networkidle never resolved: analytics scripts blocked the wait",
           "items": [
             {
               "key": "Symptom",
@@ -370,7 +370,7 @@
         },
         {
           "marker": "INCIDENT",
-          "title": "30s timeout insufficient on EC2 — WAF added variable latency",
+          "title": "30s timeout insufficient on EC2: WAF added variable latency",
           "items": [
             {
               "key": "Symptom",
@@ -424,7 +424,7 @@
         },
         {
           "marker": "INCIDENT",
-          "title": "Click blocked — overlapping label intercepted the event",
+          "title": "Click blocked: overlapping label intercepted the event",
           "items": [
             {
               "key": "Symptom",
@@ -442,7 +442,7 @@
         },
         {
           "marker": "INCIDENT",
-          "title": "Unstable text extraction — page.evaluate() with TreeWalker",
+          "title": "Unstable text extraction: page.evaluate() with TreeWalker",
           "items": [
             {
               "key": "Symptom",
